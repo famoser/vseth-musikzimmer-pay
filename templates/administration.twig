@@ -41,7 +41,9 @@
                     <td>
                         {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
                         {% if (user.paymentRemainderStatus == 2) %}
-                            (<a href="{{ user.invoiceLink }}" target="_blank">{{ user.invoiceId }}</a>)
+                            <br/>
+                            <a href="{{ user.invoiceLink }}" target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
+                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
                         {% endif %}
                     </td>
                     <td>

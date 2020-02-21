@@ -371,12 +371,8 @@ class User extends BaseEntity
         $recipient->setFamilyName($this->familyName);
 
         $addressLines = explode("\n", $this->address);
-        if (\count($addressLines) === 3) {
-            $recipient->setAddressLine2($addressLines[1]);
-        }
-
         if (\count($addressLines) > 0) {
-            $recipient->setAddressLine1($addressLines[0]);
+            $recipient->setStreet($addressLines[0]);
         }
 
         if (\count($addressLines) > 1) {

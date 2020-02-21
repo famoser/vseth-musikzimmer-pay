@@ -29,17 +29,17 @@ class Recipient
     private $familyName;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $addressLine1;
+    private $street;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $addressLine2;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $city;
 
@@ -73,32 +73,22 @@ class Recipient
         $this->familyName = $familyName;
     }
 
-    public function getAddressLine1(): string
+    public function getStreet(): ?string
     {
-        return $this->addressLine1;
+        return $this->street;
     }
 
-    public function setAddressLine1(string $addressLine1): void
+    public function setStreet(?string $street): void
     {
-        $this->addressLine1 = $addressLine1;
+        $this->street = $street;
     }
 
-    public function getAddressLine2(): string
-    {
-        return $this->addressLine2;
-    }
-
-    public function setAddressLine2(string $addressLine2): void
-    {
-        $this->addressLine2 = $addressLine2;
-    }
-
-    public function getCity(): string
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    public function setCity(string $city): void
+    public function setCity(?string $city): void
     {
         $this->city = $city;
     }

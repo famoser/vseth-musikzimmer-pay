@@ -13,8 +13,10 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
+use App\Enum\PaymentRemainderStatusType;
 use App\Form\User\EditDiscountType;
 use App\Model\Breadcrumb;
+use App\Service\Interfaces\PaymentServiceInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,6 +67,24 @@ class UserController extends BaseController
         }
 
         return $this->render('administration/user/edit.html.twig', ['form' => $myForm->createView(), 'user' => $user]);
+    }
+
+    /**
+     * @Route("/{user}/close_invoice", name="administration_user_close_invoice")
+     *
+     * @return Response
+     */
+    public function closeInvoiceAction(Request $request, User $user, TranslatorInterface $translator, PaymentServiceInterface $paymentService)
+    {
+        $paymentService->closePayment($user->getPaymentInfo());
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SEEN);
+        $user->clearPaymentInfo();
+        $this->fastSave($user);
+
+        $invoiceClosed = $translator->trans('close_invoice.successful', ['email' => $user->getEmail()], 'administration_user');
+        $this->displaySuccess($invoiceClosed);
+
+        return $this->redirectToRoute('administration');
     }
 
     /**

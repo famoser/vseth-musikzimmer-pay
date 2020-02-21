@@ -75,6 +75,10 @@ class PaymentService implements PaymentServiceInterface
         $invoice->setTitle($title);
         $invoice->setDescription($description);
 
+        $billingPeriod = $this->translator->trans('index.billing_period', [], 'payment');
+        $purpose = $title . ' ' . $billingPeriod . ' ' . $bill->getPeriodStart()->format('d.m.Y') . ' - ' . $bill->getPeriodEnd()->format('d.m.Y');
+        $invoice->setPurpose($purpose);
+
         $invoice->setPsp($this->payrexxPsp); // see http://developers.payrexx.com/docs/miscellaneous
 
         // don't forget to multiply by 100
@@ -87,14 +91,15 @@ class PaymentService implements PaymentServiceInterface
         $invoice->addField($type = 'email', true, $recipient->getEmail());
         $invoice->addField($type = 'forename', true, $recipient->getGivenName());
         $invoice->addField($type = 'surname', true, $recipient->getFamilyName());
-        $invoice->addField($type = 'address_line_1', true, $recipient->getAddressLine1());
-        $invoice->addField($type = 'address_line_2', true, $recipient->getAddressLine2());
+        $invoice->addField($type = 'street', true, $recipient->getStreet());
         $invoice->addField($type = 'city', true, $recipient->getCity());
-        $invoice->addField($type = 'country', true, 'Switzerland');
+        $invoice->addField($type = 'country', true, 'CH');
 
+        /*
+        we most likely do not need this
         $invoice->addField($type = 'terms', $mandatory = true);
         $invoice->addField($type = 'privacy_policy', $mandatory = true);
-        $invoice->addField($type = 'custom_field_1', $mandatory = true, $defaultValue = 'Value 001', $name = 'Das ist ein Feld');
+        */
 
         $payrexx = $this->getPayrexx();
 
@@ -135,7 +140,7 @@ class PaymentService implements PaymentServiceInterface
         $invoice->setId($paymentInfo->getInvoiceId());
 
         /** @var \Payrexx\Models\Response\Invoice $response */
-        $response = $payrexx->delete($invoice);
+        $response = $payrexx->delete($invoice)[0];
 
         return $response->getStatus() === 'success';
     }
