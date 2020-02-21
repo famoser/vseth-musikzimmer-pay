@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\Security;
 class IndexController extends BaseDoctrineController
 {
     /**
-     * @Route("", name="index")
+     * @Route("index", name="index")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */

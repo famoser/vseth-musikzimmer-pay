@@ -11,12 +11,12 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Organisation;
-use App\Model\User;
+use App\Entity\User;
+use App\Model\UserModel;
 use App\Security\Voter\Base\BaseVoter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-class OrganisationVoter extends BaseVoter
+class UserVoter extends BaseVoter
 {
     /**
      * @param string $attribute An attribute
@@ -26,7 +26,7 @@ class OrganisationVoter extends BaseVoter
      */
     protected function supports($attribute, $subject)
     {
-        return $subject instanceof Organisation;
+        return $subject instanceof User;
     }
 
     /**
@@ -34,12 +34,12 @@ class OrganisationVoter extends BaseVoter
      * It is safe to assume that $attribute and $subject already passed the "supports()" method check.
      *
      * @param string $attribute
-     * @param Organisation $subject
+     * @param User $subject
      *
      * @return bool
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        return \in_array(User::ROLE_ADMIN, $token->getRoleNames(), true) || ($subject->getEmail() === $token->getUser()->getUsername());
+        return \in_array(UserModel::ROLE_ADMIN, $token->getRoleNames(), true) || ($subject->getEmail() === $token->getUser()->getUsername());
     }
 }

@@ -13,10 +13,10 @@ namespace App\Model;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class User implements UserInterface
+class UserModel implements UserInterface
 {
     const ROLE_ADMIN = 'ROLE_ADMIN';
-    const ROLE_ORGANISATION = 'ROLE_ORGANISATION';
+    const ROLE_USER = 'ROLE_USER';
 
     /**
      * @var string

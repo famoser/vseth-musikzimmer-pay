@@ -33,6 +33,13 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="text")
      */
+    private $authenticationCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text")
+     */
     private $email;
 
     /**
@@ -113,6 +120,13 @@ class User extends BaseEntity
     private $invoiceHash;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $invoiceLink;
+
+    /**
      * @var int
      *
      * @ORM\Column(type="integer")
@@ -139,6 +153,16 @@ class User extends BaseEntity
      * @ORM\OneToMany(targetEntity="App\Entity\Reservation", mappedBy="user")
      */
     private $reservations;
+
+    public function getAuthenticationCode(): string
+    {
+        return $this->authenticationCode;
+    }
+
+    public function setAuthenticationCode(string $authenticationCode): void
+    {
+        $this->authenticationCode = $authenticationCode;
+    }
 
     public function getEmail(): string
     {
@@ -258,6 +282,16 @@ class User extends BaseEntity
     public function setInvoiceHash(?string $invoiceHash): void
     {
         $this->invoiceHash = $invoiceHash;
+    }
+
+    public function getInvoiceLink(): ?string
+    {
+        return $this->invoiceLink;
+    }
+
+    public function setInvoiceLink(?string $invoiceLink): void
+    {
+        $this->invoiceLink = $invoiceLink;
     }
 
     public function getPaymentRemainderStatus(): int

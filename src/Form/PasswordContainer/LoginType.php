@@ -12,7 +12,7 @@
 namespace App\Form\PasswordContainer;
 
 use App\Form\Base\BaseAbstractType;
-use App\Model\User;
+use App\Model\UserModel;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -30,7 +30,7 @@ class LoginType extends BaseAbstractType
     {
         $resolver->setDefaults([
             'translation_domain' => 'model_user',
-            'data_class' => User::class,
+            'data_class' => UserModel::class,
         ]);
     }
 }

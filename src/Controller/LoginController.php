@@ -12,7 +12,7 @@
 namespace App\Controller;
 
 use App\Controller\Base\BaseFormController;
-use App\Entity\Organisation;
+use App\Entity\User;
 use App\Form\PasswordContainer\LoginType;
 use App\Security\UserProvider;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -64,15 +64,15 @@ class LoginController extends BaseFormController
      */
     public function codeAction(Request $request, string $code, UserProvider $provider)
     {
-        /** @var Organisation $organisation */
-        $organisation = $this->getDoctrine()->getRepository(Organisation::class)->findOneBy(['authenticationCode' => $code]);
-        if ($organisation === null) {
+        /** @var User $user */
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(['authenticationCode' => $code]);
+        if ($user === null) {
             $this->displayError($this->getTranslator()->trans('login.error.invalid_auth_code', [], 'login'));
         } else {
-            $user = $provider->loadUserByUsername($organisation->getEmail());
+            $user = $provider->loadUserByUsername($user->getEmail());
             $this->loginUser($request, $user);
 
-            return $this->redirectToRoute('organisation_view', ['organisation' => $organisation->getId()]);
+            return $this->redirectToRoute('payment_index', ['user' => $user->getId()]);
         }
 
         return $this->render('login/login_code.html.twig');

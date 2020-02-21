@@ -27,6 +27,6 @@ class AdministrationController extends BaseController
      */
     public function indexAction()
     {
-        return $this->redirectToRoute('administration_organisations');
+        return $this->redirectToRoute('administration_users');
     }
 }

@@ -3,6 +3,14 @@ knowledge base for developers.
 
 ## Useful commands
 
+##### prepare mysql
+
+`CREATE DATABASE vseth_musikzimmer_pay`
+`CREATE USER 'symfony'@'localhost' IDENTIFIED BY 'password';`
+`GRANT ALL PRIVILEGES ON vseth_musikzimmer_pay.* TO 'symfony'@'localhost';`
+`FLUSH PRIVILEGES;`
+
+
 ##### symfony-cmd
 `php bin/console server:run` to start the symfony server  
 `doctrine:migrations:diff` to generate the migration class  

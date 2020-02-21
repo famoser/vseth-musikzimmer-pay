@@ -9,30 +9,35 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Form\Organisation;
+namespace App\Form\PaymentRemainder;
 
-use App\Entity\Organisation;
-use App\Form\Type\SemesterType;
+use App\Entity\PaymentRemainder;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class OrganisationType extends AbstractType
+class PaymentRemainderType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', TextType::class);
-        $builder->add('email', EmailType::class);
-        $builder->add('relationSinceSemester', SemesterType::class);
+        $builder->add('subject', TextType::class);
+        $builder->add('body', TextareaType::class);
+        $builder->add('fee', NumberType::class);
+        $builder->add('dueAt', DateTimeType::class);
+        $builder->add('testEmail', EmailType::class, ['mapped' => false, 'required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Organisation::class,
-            'translation_domain' => 'entity_organisation',
+            'data_class' => PaymentRemainder::class,
+            'translation_domain' => 'entity_payment_remainder',
         ]);
     }
 }

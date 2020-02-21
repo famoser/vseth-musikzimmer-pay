@@ -12,9 +12,8 @@
 namespace App\Controller\Organisation;
 
 use App\Controller\Administration\Base\BaseController;
-use App\Entity\Organisation;
 use App\Entity\Reservation;
-use App\Form\Type\SemesterType;
+use App\Entity\User;
 use App\Model\Breadcrumb;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,15 +21,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @Route("/event")
+ * @Route("/user")
  */
-class EventController extends BaseController
+class UserController extends BaseController
 {
-    /**
-     * @var Organisation
-     */
-    private $organisation;
-
     /**
      * @Route("/new", name="organisation_event_new")
      *
