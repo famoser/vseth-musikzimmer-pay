@@ -12,8 +12,12 @@
 namespace App\Service\Interfaces;
 
 use App\Entity\User;
+use App\Model\Bill;
 
 interface BillServiceInterface
 {
+    /**
+     * @return Bill
+     */
     public function createBill(User $user);
 }

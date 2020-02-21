@@ -16,36 +16,36 @@ class Subscription
     /**
      * @var \DateTime
      */
-    private $start;
+    private $startAt;
 
     /**
      * @var \DateTime
      */
-    private $end;
+    private $endAt;
 
     /**
      * @var int
      */
     private $price;
 
-    public function getStart(): \DateTime
+    public function getStartAt(): \DateTime
     {
-        return $this->start;
+        return $this->startAt;
     }
 
-    public function setStart(\DateTime $start): void
+    public function setStartAt(\DateTime $startAt): void
     {
-        $this->start = $start;
+        $this->startAt = $startAt;
     }
 
-    public function getEnd(): \DateTime
+    public function getEndAt(): \DateTime
     {
-        return $this->end;
+        return $this->endAt;
     }
 
-    public function setEnd(\DateTime $end): void
+    public function setEndAt(\DateTime $endAt): void
     {
-        $this->end = $end;
+        $this->endAt = $endAt;
     }
 
     public function getPrice(): int

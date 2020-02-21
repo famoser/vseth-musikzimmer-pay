@@ -49,6 +49,11 @@ class Bill
     private $reservations = [];
 
     /**
+     * @var int
+     */
+    private $reservationsSubtotal = 0;
+
+    /**
      * @var \DateTime|null
      */
     private $lastPayedSubscriptionEnd;
@@ -56,7 +61,12 @@ class Bill
     /**
      * @var Subscription[]
      */
-    private $subscription = [];
+    private $subscriptions = [];
+
+    /**
+     * @var int
+     */
+    private $subscriptionsSubtotal = 0;
 
     /**
      * @var int
@@ -76,7 +86,7 @@ class Bill
     /**
      * @var int
      */
-    private $total;
+    private $total = 0;
 
     public function getId(): string
     {
@@ -157,17 +167,17 @@ class Bill
     /**
      * @return Subscription[]
      */
-    public function getSubscription(): array
+    public function getSubscriptions(): array
     {
-        return $this->subscription;
+        return $this->subscriptions;
     }
 
     /**
-     * @param Subscription[] $subscription
+     * @param Subscription[] $subscriptions
      */
-    public function setSubscription(array $subscription): void
+    public function setSubscriptions(array $subscriptions): void
     {
-        $this->subscription = $subscription;
+        $this->subscriptions = $subscriptions;
     }
 
     public function getBillFee(): int
@@ -208,5 +218,25 @@ class Bill
     public function setTotal(int $total): void
     {
         $this->total = $total;
+    }
+
+    public function getReservationsSubtotal(): int
+    {
+        return $this->reservationsSubtotal;
+    }
+
+    public function setReservationsSubtotal(int $reservationsSubtotal): void
+    {
+        $this->reservationsSubtotal = $reservationsSubtotal;
+    }
+
+    public function getSubscriptionsSubtotal(): int
+    {
+        return $this->subscriptionsSubtotal;
+    }
+
+    public function setSubscriptionsSubtotal(int $subscriptionsSubtotal): void
+    {
+        $this->subscriptionsSubtotal = $subscriptionsSubtotal;
     }
 }

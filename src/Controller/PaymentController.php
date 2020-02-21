@@ -17,6 +17,7 @@ use App\Enum\PaymentRemainderStatusType;
 use App\Security\Voter\Base\BaseVoter;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
+use App\Service\Interfaces\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,7 +31,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(User $user, BillServiceInterface $billService)
+    public function indexAction(User $user, BillServiceInterface $billService, SettingsServiceInterface $settingsService)
     {
         $this->ensureAccessGranted($user);
 
@@ -44,8 +45,9 @@ class PaymentController extends BaseController
         $this->fastSave($user);
 
         $bill = $billService->createBill($user);
+        $setting = $settingsService->get();
 
-        return $this->render('payment/view.html.twig', ['user' => $user, 'bill' => $bill]);
+        return $this->render('payment/view.html.twig', ['user' => $user, 'bill' => $bill, 'setting' => $setting]);
     }
 
     /**

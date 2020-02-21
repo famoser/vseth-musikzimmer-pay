@@ -3,6 +3,9 @@ parameters:
   APP_SECRET: '%env(APP_SECRET)%'
   DATABASE_URL: '%env(DATABASE_URL)%'
   MAILER_URL: '%env(MAILER_URL)%'
-  MAILER_SENDER: '%env(MAILER_SENDER)%'
+  REPLY_EMAIL: '%env(REPLY_EMAIL)%'
   ADMIN_PASSWORD: '%env(ADMIN_PASSWORD)%'
+  PAYREX_INSTANCE: '%env(PAYREX_INSTANCE)%'
+  PAYREX_TOKEN: '%env(PAYREX_TOKEN)%'
+  PAYREXX_PSP: '%env(PAYREXX_PSP)%'
   PUBLIC_DIR: "%kernel.root_dir%/../public"
