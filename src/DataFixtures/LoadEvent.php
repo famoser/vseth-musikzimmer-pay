@@ -12,8 +12,8 @@
 namespace App\DataFixtures;
 
 use App\DataFixtures\Base\BaseFixture;
-use App\Entity\Event;
 use App\Entity\Organisation;
+use App\Entity\Reservation;
 use App\Form\Type\SemesterType;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -49,7 +49,7 @@ class LoadEvent extends BaseFixture
         $faker = $this->getFaker();
         $organisationCount = \count($organisations);
         for ($i = 1; $i < $organisationCount; ++$i) {
-            /** @var Event[] $randomEvents */
+            /** @var Reservation[] $randomEvents */
             $randomEvents = $this->loadSomeRandoms($manager, $faker->randomFloat(0, 0, 10));
             foreach ($randomEvents as $randomEvent) {
                 $randomEvent->setOrganisation($organisations[$i]);
@@ -71,7 +71,7 @@ class LoadEvent extends BaseFixture
             $lang = 'both';
         }
 
-        $event = new Event();
+        $event = new Reservation();
         $event->setSemester(SemesterType::getCurrentSemester());
 
         if ($lang === 'de' || $lang === 'both') {
@@ -103,8 +103,8 @@ class LoadEvent extends BaseFixture
     {
         //prepare resources
         $json = file_get_contents(__DIR__ . '/Resources/events.json');
-        /** @var Event[] $events */
-        $events = $this->serializer->deserialize($json, Event::class . '[]', 'json');
+        /** @var Reservation[] $events */
+        $events = $this->serializer->deserialize($json, Reservation::class . '[]', 'json');
 
         $startDate = new \DateTime('today 18:00');
         $endDate = new \DateTime('today 20:00');

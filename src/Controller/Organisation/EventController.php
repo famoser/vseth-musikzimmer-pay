@@ -12,8 +12,8 @@
 namespace App\Controller\Organisation;
 
 use App\Controller\Administration\Base\BaseController;
-use App\Entity\Event;
 use App\Entity\Organisation;
+use App\Entity\Reservation;
 use App\Form\Type\SemesterType;
 use App\Model\Breadcrumb;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +39,7 @@ class EventController extends BaseController
     public function newAction(Organisation $organisation, Request $request, TranslatorInterface $translator)
     {
         //create the event
-        $event = new Event();
+        $event = new Reservation();
         $event->setSemester(SemesterType::getCurrentSemester());
         $event->setOrganisation($organisation);
         $event->setLocation('');
@@ -53,7 +53,7 @@ class EventController extends BaseController
     /**
      * @return \Symfony\Component\Form\FormInterface|Response
      */
-    private function displayNewForm(Request $request, TranslatorInterface $translator, Organisation $organisation, Event $event)
+    private function displayNewForm(Request $request, TranslatorInterface $translator, Organisation $organisation, Reservation $event)
     {
         //process form
         $myForm = $this->handleCreateForm(
@@ -77,7 +77,7 @@ class EventController extends BaseController
      *
      * @return Response
      */
-    public function copyAction(Request $request, Organisation $organisation, Event $event, TranslatorInterface $translator)
+    public function copyAction(Request $request, Organisation $organisation, Reservation $event, TranslatorInterface $translator)
     {
         $clonedEvent = clone $event;
 
@@ -89,7 +89,7 @@ class EventController extends BaseController
      *
      * @return Response
      */
-    public function editAction(Organisation $organisation, Request $request, Event $event, TranslatorInterface $translator)
+    public function editAction(Organisation $organisation, Request $request, Reservation $event, TranslatorInterface $translator)
     {
         //process form
         $myForm = $this->handleUpdateForm(
@@ -114,7 +114,7 @@ class EventController extends BaseController
      *
      * @return Response
      */
-    public function removeAction(Organisation $organisation, Request $request, Event $event)
+    public function removeAction(Organisation $organisation, Request $request, Reservation $event)
     {
         //process form
         $form = $this->handleDeleteForm($request, $event);
@@ -127,7 +127,7 @@ class EventController extends BaseController
         return $this->render('organisation/event/remove.html.twig', ['form' => $form->createView(), 'event' => $event]);
     }
 
-    private function validateEvent(Event $event, TranslatorInterface $translator): bool
+    private function validateEvent(Reservation $event, TranslatorInterface $translator): bool
     {
         if (mb_strlen($event->getNameDe()) === 0 && mb_strlen($event->getNameEn()) === 0) {
             $this->displayError($translator->trans('new.error.no_name', [], 'organisation_event'));

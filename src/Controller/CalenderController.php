@@ -12,7 +12,7 @@
 namespace App\Controller;
 
 use App\Controller\Base\BaseDoctrineController;
-use App\Entity\Event;
+use App\Entity\Reservation;
 use Doctrine\Persistence\ManagerRegistry;
 use Eluceo\iCal\Component\Calendar;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,8 +33,8 @@ class CalenderController extends BaseDoctrineController
     {
         $langPreference = $this->getLanguagePreference($request);
 
-        /** @var Event[] $events */
-        $events = $managerRegistry->getRepository(Event::class)->findBy(['showInCalender' => true], ['semester' => 'ASC', 'startDate' => 'ASC']);
+        /** @var Reservation[] $events */
+        $events = $managerRegistry->getRepository(Reservation::class)->findBy(['showInCalender' => true], ['semester' => 'ASC', 'startDate' => 'ASC']);
         $vCalendar = new Calendar('vseth.ethz.ch/anerkannte-organisation');
         foreach ($events as $event) {
             if ($event->getStartDate() === null || $event->getEndDate() === null) {

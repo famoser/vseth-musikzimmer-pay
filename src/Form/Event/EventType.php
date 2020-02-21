@@ -11,7 +11,7 @@
 
 namespace App\Form\Event;
 
-use App\Entity\Event;
+use App\Entity\Reservation;
 use App\Form\Type\SemesterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -45,7 +45,7 @@ class EventType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Event::class,
+            'data_class' => Reservation::class,
             'translation_domain' => 'entity_event',
         ]);
     }
