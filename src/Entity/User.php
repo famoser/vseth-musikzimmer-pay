@@ -120,7 +120,7 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $invoiceHash;
+    private $invoiceId;
 
     /**
      * @var string|null
@@ -272,14 +272,14 @@ class User extends BaseEntity
         $this->amountOwnedWithFees = $amountOwnedWithFees;
     }
 
-    public function getInvoiceHash(): ?string
+    public function getInvoiceId(): ?string
     {
-        return $this->invoiceHash;
+        return $this->invoiceId;
     }
 
-    public function setInvoiceHash(?string $invoiceHash): void
+    public function setInvoiceId(?string $invoiceId): void
     {
-        $this->invoiceHash = $invoiceHash;
+        $this->invoiceId = $invoiceId;
     }
 
     public function getInvoiceLink(): ?string
@@ -336,7 +336,7 @@ class User extends BaseEntity
 
     public function writePaymentInfo(\App\Model\PaymentInfo $paymentInfo)
     {
-        $this->invoiceHash = $paymentInfo->getInvoiceHash();
+        $this->invoiceId = $paymentInfo->getInvoiceId();
         $this->invoiceLink = $paymentInfo->getInvoiceLink();
     }
 
@@ -347,7 +347,7 @@ class User extends BaseEntity
     {
         $paymentInfo = new PaymentInfo();
 
-        $paymentInfo->setInvoiceHash($this->invoiceHash);
+        $paymentInfo->setInvoiceId($this->invoiceId);
         $paymentInfo->setInvoiceLink($this->invoiceLink);
 
         return $paymentInfo;
@@ -356,7 +356,7 @@ class User extends BaseEntity
     public function clearPaymentInfo()
     {
         $this->invoiceLink = null;
-        $this->invoiceHash = null;
+        $this->invoiceId = null;
     }
 
     /**

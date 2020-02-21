@@ -32,15 +32,34 @@ class PaymentService implements PaymentServiceInterface
     private $payrexxSecret;
 
     /**
+     * @var string
+     */
+    private $payrexxPsp;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
+    private $payrexx;
+
     public function __construct(ParameterBagInterface $parameterBag, TranslatorInterface $translator)
     {
-        $this->payrexxInstanceName = $parameterBag->get('PAYREX_INSTANCE');
-        $this->payrexxSecret = $parameterBag->get('PAYREX_SECRET');
+        $this->payrexxInstanceName = $parameterBag->get('PAYREXX_INSTANCE');
+        $this->payrexxSecret = $parameterBag->get('PAYREXX_SECRET');
+        $this->payrexxPsp = $parameterBag->get('PAYREXX_PSP');
+
         $this->translator = $translator;
+    }
+
+    /**
+     * @throws \Payrexx\PayrexxException
+     *
+     * @return Payrexx
+     */
+    private function getPayrexx()
+    {
+        return new Payrexx($this->payrexxInstanceName, $this->payrexxSecret);
     }
 
     /**
@@ -48,8 +67,6 @@ class PaymentService implements PaymentServiceInterface
      */
     public function startPayment(Bill $bill)
     {
-        $payrexx = new Payrexx($this->payrexxInstanceName, $this->payrexxSecret);
-
         $invoice = new Invoice();
         $invoice->setReferenceId($bill->getId()); // info for payment link (reference id)
 
@@ -58,9 +75,7 @@ class PaymentService implements PaymentServiceInterface
         $invoice->setTitle($title);
         $invoice->setDescription($description);
 
-        // administrative information, which provider to use (psp)
-        // psp #1 = Payrexx' test mode, see http://developers.payrexx.com/docs/miscellaneous
-        $invoice->setPsp(1);
+        $invoice->setPsp($this->payrexxPsp); // see http://developers.payrexx.com/docs/miscellaneous
 
         // don't forget to multiply by 100
         $invoice->setAmount($bill->getTotal() * 100);
@@ -81,12 +96,16 @@ class PaymentService implements PaymentServiceInterface
         $invoice->addField($type = 'privacy_policy', $mandatory = true);
         $invoice->addField($type = 'custom_field_1', $mandatory = true, $defaultValue = 'Value 001', $name = 'Das ist ein Feld');
 
-        try {
-            $response = $payrexx->create($invoice);
-            dump($response);
-        } catch (\Payrexx\PayrexxException $e) {
-            echo $e->getMessage();
-        }
+        $payrexx = $this->getPayrexx();
+
+        /** @var \Payrexx\Models\Response\Invoice $response */
+        $response = $payrexx->create($invoice);
+
+        $paymentInfo = new PaymentInfo();
+        $paymentInfo->setInvoiceLink($response->getLink());
+        $paymentInfo->setInvoiceId($response->getId());
+
+        return $paymentInfo;
     }
 
     /**
@@ -94,9 +113,15 @@ class PaymentService implements PaymentServiceInterface
      */
     public function paymentSuccessful(PaymentInfo $paymentInfo)
     {
-        // TODO: Implement paymentSuccessful() method.
+        $payrexx = $this->getPayrexx();
 
-        return false;
+        $invoice = new Invoice();
+        $invoice->setId($paymentInfo->getInvoiceId());
+
+        /** @var \Payrexx\Models\Response\Invoice $response */
+        $response = $payrexx->getOne($invoice);
+
+        return $response->getStatus() === 'confirmed';
     }
 
     /**
@@ -104,8 +129,14 @@ class PaymentService implements PaymentServiceInterface
      */
     public function closePayment(PaymentInfo $paymentInfo)
     {
-        // TODO: Implement closePayment() method.
+        $payrexx = $this->getPayrexx();
 
-        return false;
+        $invoice = new Invoice();
+        $invoice->setId($paymentInfo->getInvoiceId());
+
+        /** @var \Payrexx\Models\Response\Invoice $response */
+        $response = $payrexx->delete($invoice);
+
+        return $response->getStatus() === 'success';
     }
 }

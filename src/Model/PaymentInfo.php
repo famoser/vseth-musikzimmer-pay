@@ -16,21 +16,21 @@ class PaymentInfo
     /**
      * @var string
      */
-    private $invoiceHash;
+    private $invoiceId;
 
     /**
      * @var string
      */
     private $invoiceLink;
 
-    public function getInvoiceHash(): string
+    public function getInvoiceId(): string
     {
-        return $this->invoiceHash;
+        return $this->invoiceId;
     }
 
-    public function setInvoiceHash(string $invoiceHash): void
+    public function setInvoiceId(string $invoiceId): void
     {
-        $this->invoiceHash = $invoiceHash;
+        $this->invoiceId = $invoiceId;
     }
 
     public function getInvoiceLink(): string
