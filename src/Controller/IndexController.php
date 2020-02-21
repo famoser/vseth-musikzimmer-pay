@@ -28,7 +28,7 @@ class IndexController extends BaseDoctrineController
     public function indexAction(Security $security)
     {
         $user = $security->getUser();
-        if (\in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        if ($user !== null && \in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return $this->redirectToRoute('administration');
         }
 
