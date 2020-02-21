@@ -28,7 +28,7 @@ class BillService implements BillServiceInterface
      *
      * @param $settingService
      */
-    public function __construct($settingService)
+    public function __construct(SettingsServiceInterface $settingService)
     {
         $this->settingService = $settingService;
     }

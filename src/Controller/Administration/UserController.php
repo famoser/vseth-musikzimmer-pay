@@ -27,7 +27,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserController extends BaseController
 {
     /**
-     * @Route("/{organisation}/edit_discount", name="administration_user_edit_discount")
+     * @Route("/{user}/edit_discount", name="administration_user_edit_discount")
      *
      * @return Response
      */
@@ -64,7 +64,7 @@ class UserController extends BaseController
             return $myForm;
         }
 
-        return $this->render('administration/organisation/edit.html.twig', ['form' => $myForm->createView(), 'organisation' => $user]);
+        return $this->render('administration/user/edit.html.twig', ['form' => $myForm->createView(), 'user' => $user]);
     }
 
     /**
@@ -76,8 +76,8 @@ class UserController extends BaseController
     {
         return array_merge(parent::getIndexBreadcrumbs(), [
             new Breadcrumb(
-                $this->generateUrl('administration_users'),
-                $this->getTranslator()->trans('index.title', [], 'administration_user')
+                $this->generateUrl('administration'),
+                $this->getTranslator()->trans('index.title', [], 'administration')
             ),
         ]);
     }

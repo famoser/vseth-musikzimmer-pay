@@ -78,7 +78,7 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="integer")
      */
-    private $category = UserCategoryType::STUDENTS;
+    private $category = UserCategoryType::STUDENT;
 
     /**
      * @var int
@@ -106,14 +106,14 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="integer")
      */
-    private $amountOwned;
+    private $amountOwed;
 
     /**
      * @var int
      *
      * @ORM\Column(type="integer")
      */
-    private $amountOwnedWithFees;
+    private $amountOwedWithFees;
 
     /**
      * @var string|null
@@ -252,24 +252,24 @@ class User extends BaseEntity
         $this->lastPayedPeriodicFeeEnd = $lastPayedPeriodicFeeEnd;
     }
 
-    public function getAmountOwned(): int
+    public function getAmountOwed(): int
     {
-        return $this->amountOwned;
+        return $this->amountOwed;
     }
 
-    public function setAmountOwned(int $amountOwned): void
+    public function setAmountOwed(int $amountOwed): void
     {
-        $this->amountOwned = $amountOwned;
+        $this->amountOwed = $amountOwed;
     }
 
-    public function getAmountOwnedWithFees(): int
+    public function getAmountOwedWithFees(): int
     {
-        return $this->amountOwnedWithFees;
+        return $this->amountOwedWithFees;
     }
 
-    public function setAmountOwnedWithFees(int $amountOwnedWithFees): void
+    public function setAmountOwedWithFees(int $amountOwedWithFees): void
     {
-        $this->amountOwnedWithFees = $amountOwnedWithFees;
+        $this->amountOwedWithFees = $amountOwedWithFees;
     }
 
     public function getInvoiceId(): ?string

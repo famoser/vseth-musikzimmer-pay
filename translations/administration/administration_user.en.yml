@@ -1,0 +1,5 @@
+edit_discount:
+  title: "edit discount"
+  description: "give users a discount & describe it."
+  error:
+    no_discount_description: "If you add a discount, you must also describe it"

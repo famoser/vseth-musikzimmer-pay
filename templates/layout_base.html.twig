@@ -99,13 +99,12 @@
 
                 {% if is_granted('ROLE_ADMIN') %}
                     <ul class="navbar-nav">
-                        {{ own_macros.menu_entry("index.title"|trans({}, "administration_organisation"), path("administration_organisations")) }}
+                        {{ own_macros.menu_entry("index.title"|trans({}, "administration"), path("administration")) }}
                     </ul>
-                {% elseif is_granted('ROLE_ORGANISATION') %}
                 {% endif %}
 
                 <ul class="navbar-nav ml-auto">
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ORGANISATION') %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') %}
                         {{ own_macros.menu_icon_entry("fas fa-sign-out", path("login_logout")) }}
                     {% else %}
                         {{ own_macros.menu_icon_entry("fas fa-sign-in", path("login")) }}

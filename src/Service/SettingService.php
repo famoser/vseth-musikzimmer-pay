@@ -13,19 +13,19 @@ namespace App\Service;
 
 use App\Entity\Setting;
 use App\Service\Interfaces\SettingsServiceInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ManagerRegistry;
 
 class SettingService implements SettingsServiceInterface
 {
     /**
-     * @var ObjectManager
+     * @var ManagerRegistry
      */
     private $doctrine;
 
     /**
      * SettingService constructor.
      */
-    public function __construct(ObjectManager $doctrine)
+    public function __construct(ManagerRegistry $doctrine)
     {
         $this->doctrine = $doctrine;
     }
@@ -43,7 +43,8 @@ class SettingService implements SettingsServiceInterface
      */
     public function set(Setting $setting)
     {
-        $this->doctrine->persist($setting);
-        $this->doctrine->flush();
+        $manager = $this->doctrine->getManager();
+        $manager->persist($setting);
+        $manager->flush();
     }
 }

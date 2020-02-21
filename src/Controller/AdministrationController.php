@@ -30,7 +30,7 @@ class AdministrationController extends BaseController
     {
         //get all existing semesters
         /** @var User[] $users */
-        $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['name' => 'ASC']);
+        $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['email' => 'ASC']);
 
         return $this->render('administration.twig', ['users' => $users]);
     }

@@ -41,7 +41,7 @@ class Bill
     /**
      * @var int
      */
-    private $category = UserCategoryType::STUDENTS;
+    private $category = UserCategoryType::STUDENT;
 
     /**
      * @var Reservation[]

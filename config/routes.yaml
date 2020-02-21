@@ -6,8 +6,3 @@ app_administration:
   resource: "../src/Controller/Administration/"
   type:     annotation
   prefix:   /administration
-
-app_administration_semester:
-  resource: "../src/Controller/Organisation"
-  type:     annotation
-  prefix:   /organisation/{organisation}

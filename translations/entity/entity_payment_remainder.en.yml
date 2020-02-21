@@ -1,0 +1,14 @@
+entity:
+  name: 'Payment Remainder'
+
+help:
+  name: "Name it Invoice (Rechnung) the first time. The next times name it Dunning Letter (Mahnung)."
+  subject: "The E-Mail subject."
+  body: "The E-Mail body. Be sure to include (url) as placeholders; optionally also include (given_name), (family_name)."
+  fee: "The fee is added to the invoice if its values is bigger than 0."
+
+name: "name"
+subject: "subject"
+body: "body"
+fee: "fee"
+due_at: "due at"

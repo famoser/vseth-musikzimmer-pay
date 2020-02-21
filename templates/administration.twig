@@ -1,0 +1,60 @@
+{% extends "large_content_base.html.twig" %}
+
+{% block title %}{{ "index.title"|trans }}{% endblock %}
+{% block description %}{{ "index.description"|trans }}{% endblock %}
+
+{% trans_default_domain "administration" %}
+
+{% block large_content %}
+    {% if users|length == 0 %}
+        <p>{{ "index.no_users"|trans }}</p>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ "email"|trans({}, "entity_user") }}</th>
+                <th>{{ "given_name"|trans({}, "entity_user") }}</th>
+                <th>{{ "family_name"|trans({}, "entity_user") }}</th>
+                <th>{{ "phone"|trans({}, "entity_user") }}</th>
+                <th>{{ "category"|trans({}, "entity_user") }}</th>
+                <th>{{ "discount"|trans({}, "entity_user") }}</th>
+                <th>{{ "amount_owed"|trans({}, "entity_user") }}</th>
+                <th>{{ "payment_remainder_status"|trans({}, "entity_user") }}</th>
+                <th class="minimal-width"></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.givenName }}</td>
+                    <td>{{ user.familyName }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>{{ user.category|categoryText }}</td>
+                    <td>{{ user.amountOwed }}</td>
+                    <td>{{ user.discount }}
+                        <a href="{{ path("administration_user_edit_discount", {"user" : user.id}) }}">
+                            <i class="fal fa-pencil"></i>
+                        </a>
+                    </td>
+                    <td>
+                        {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
+                        {% if (user.paymentRemainderStatus == 2) %}
+                            (<a href="{{ user.invoiceLink }}" target="_blank">{{ user.invoiceId }}</a>)
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-outline-secondary"
+                               href="{{ path("payment_index", {"user" : user.id}) }}">
+                                <i class="fal fa-user"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

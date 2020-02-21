@@ -30,7 +30,7 @@ class EditDiscountType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
-            'translation_domain' => 'entity_semester_report',
+            'translation_domain' => 'entity_user',
         ]);
     }
 }

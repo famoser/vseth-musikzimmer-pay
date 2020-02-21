@@ -15,8 +15,8 @@ use App\Enum\Base\BaseEnum;
 
 class UserCategoryType extends BaseEnum
 {
-    const STUDENTS = 1;
-    const PHDs = 3;
+    const STUDENT = 1;
+    const PHD = 3;
     const ETH_UNIVERSITY_STAFF = 4;
     const EXTERNAL = 6;
     const SERVICE = 7;

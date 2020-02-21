@@ -12,7 +12,8 @@
 namespace App\Extension;
 
 use App\Enum\BooleanType;
-use App\Form\Type\SemesterType;
+use App\Enum\PaymentRemainderStatusType;
+use App\Enum\UserCategoryType;
 use DateTime;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
@@ -39,7 +40,8 @@ class TwigExtension extends AbstractExtension
             new TwigFilter('timeFormat', [$this, 'timeFormatFilter']),
             new TwigFilter('dateTimeFormat', [$this, 'dateTimeFilter']),
             new TwigFilter('booleanFormat', [$this, 'booleanFilter']),
-            new TwigFilter('semesterFormat', [$this, 'semesterFilter']),
+            new TwigFilter('categoryText', [$this, 'categoryTextFilter']),
+            new TwigFilter('paymentRemainderStatusText', [$this, 'paymentRemainderStatusTextFilter']),
             new TwigFilter('camelCaseToUnderscore', [$this, 'camelCaseToUnderscoreFilter']),
         ];
     }
@@ -70,15 +72,24 @@ class TwigExtension extends AbstractExtension
         return '-';
     }
 
+    public function paymentRemainderStatusTextFilter($value)
+    {
+        if (\is_int($value)) {
+            return PaymentRemainderStatusType::getTranslation($value, $this->translator);
+        }
+
+        return '-';
+    }
+
     /**
-     * @param $date
+     * @param $value
      *
      * @return string
      */
-    public function semesterFilter($semester)
+    public function categoryTextFilter($value)
     {
-        if (\is_int($semester)) {
-            return SemesterType::semesterToString($semester);
+        if (\is_int($value)) {
+            return UserCategoryType::getTranslation($value, $this->translator);
         }
 
         return '-';
