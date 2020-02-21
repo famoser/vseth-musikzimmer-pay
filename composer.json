@@ -10,6 +10,7 @@
     "ext-pdo_sqlite": "*",
     "doctrine/doctrine-fixtures-bundle": "^3.0",
     "eluceo/ical": "^0.16.0",
+    "payrexx/payrexx": "^1.6",
     "ramsey/uuid": "^3",
     "sensio/framework-extra-bundle": "^5.1",
     "sensiolabs/security-checker": "^5.0",

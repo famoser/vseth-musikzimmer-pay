@@ -15,6 +15,8 @@ use App\Entity\Base\BaseEntity;
 use App\Entity\Traits\IdTrait;
 use App\Enum\PaymentRemainderStatusType;
 use App\Enum\UserCategoryType;
+use App\Model\Bill\Recipient;
+use App\Model\PaymentInfo;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
@@ -298,16 +300,12 @@ class User extends BaseEntity
     public function setPaymentRemainderStatus(int $paymentRemainderStatus): void
     {
         $this->paymentRemainderStatus = $paymentRemainderStatus;
+        $this->paymentRemainderStatusAt = new \DateTime();
     }
 
     public function getPaymentRemainderStatusAt(): ?\DateTime
     {
         return $this->paymentRemainderStatusAt;
-    }
-
-    public function setPaymentRemainderStatusAt(?\DateTime $paymentRemainderStatusAt): void
-    {
-        $this->paymentRemainderStatusAt = $paymentRemainderStatusAt;
     }
 
     public function getPaymentRemainder(): ?PaymentRemainder
@@ -334,5 +332,57 @@ class User extends BaseEntity
     public function setReservations($reservations): void
     {
         $this->reservations = $reservations;
+    }
+
+    public function writePaymentInfo(\App\Model\PaymentInfo $paymentInfo)
+    {
+        $this->invoiceHash = $paymentInfo->getInvoiceHash();
+        $this->invoiceLink = $paymentInfo->getInvoiceLink();
+    }
+
+    /**
+     * @return PaymentInfo
+     */
+    public function getPaymentInfo()
+    {
+        $paymentInfo = new PaymentInfo();
+
+        $paymentInfo->setInvoiceHash($this->invoiceHash);
+        $paymentInfo->setInvoiceLink($this->invoiceLink);
+
+        return $paymentInfo;
+    }
+
+    public function clearPaymentInfo()
+    {
+        $this->invoiceLink = null;
+        $this->invoiceHash = null;
+    }
+
+    /**
+     * @return Recipient
+     */
+    public function createRecipient()
+    {
+        $recipient = new Recipient();
+        $recipient->setEmail($this->email);
+
+        $recipient->setGivenName($this->givenName);
+        $recipient->setFamilyName($this->familyName);
+
+        $addressLines = explode("\n", $this->address);
+        if (\count($addressLines) === 3) {
+            $recipient->setAddressLine2($addressLines[1]);
+        }
+
+        if (\count($addressLines) > 0) {
+            $recipient->setAddressLine1($addressLines[0]);
+        }
+
+        if (\count($addressLines) > 1) {
+            $recipient->setCity($addressLines[\count($addressLines) - 1]);
+        }
+
+        return $recipient;
     }
 }

@@ -27,20 +27,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserController extends BaseController
 {
     /**
-     * @Route("", name="administration_users")
-     *
-     * @return Response
-     */
-    public function indexAction()
-    {
-        //get all existing semesters
-        /** @var User[] $users */
-        $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['name' => 'ASC']);
-
-        return $this->render('administration/users.twig', ['users' => $users]);
-    }
-
-    /**
      * @Route("/{organisation}/edit_discount", name="administration_user_edit_discount")
      *
      * @return Response

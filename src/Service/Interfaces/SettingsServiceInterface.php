@@ -9,15 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Enum;
+namespace App\Service\Interfaces;
 
-use App\Enum\Base\BaseEnum;
+use App\Entity\Setting;
 
-class PaymentRemainderStatusType extends BaseEnum
+interface SettingsServiceInterface
 {
-    const NONE = 0;
-    const SEEN = 1;
-    const PAYMENT_STARTED = 2;
-    const PAYMENT_SUCCESSFUL = 3;
-    const PAYMENT_ABORTED = 4;
+    /**
+     * @return Setting
+     */
+    public function get();
+
+    public function set(Setting $setting);
 }

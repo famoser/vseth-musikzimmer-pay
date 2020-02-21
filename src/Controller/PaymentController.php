@@ -15,6 +15,8 @@ use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
 use App\Security\Voter\Base\BaseVoter;
+use App\Service\Interfaces\BillServiceInterface;
+use App\Service\Interfaces\PaymentServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -28,7 +30,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(User $user)
+    public function indexAction(User $user, BillServiceInterface $billService)
     {
         $this->ensureAccessGranted($user);
 
@@ -39,12 +41,11 @@ class PaymentController extends BaseController
         }
 
         $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SEEN);
-        $user->setPaymentRemainderStatusAt(new \DateTime());
         $this->fastSave($user);
 
-        $output = ['user' => $user];
+        $bill = $billService->createBill($user);
 
-        return $this->render('payment/view.html.twig', $output);
+        return $this->render('payment/view.html.twig', ['user' => $user, 'bill' => $bill]);
     }
 
     /**
@@ -52,7 +53,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function confirmAction(User $user)
+    public function confirmAction(User $user, BillServiceInterface $billService, PaymentServiceInterface $paymentService)
     {
         $this->ensureAccessGranted($user);
 
@@ -64,9 +65,14 @@ class PaymentController extends BaseController
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         }
 
-        // TODO: initiate payrexx payment
+        $bill = $billService->createBill($user);
+        $paymentInfo = $paymentService->startPayment($bill);
 
-        return $this->redirect('payrexx url');
+        $user->writePaymentInfo($paymentInfo);
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
+        $this->fastSave($user);
+
+        return $this->redirect($user->getInvoiceLink());
     }
 
     /**
@@ -74,12 +80,18 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function successfulAction(User $user)
+    public function successfulAction(User $user, PaymentServiceInterface $paymentService)
     {
         $this->ensureAccessGranted($user);
 
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
-            // TODO: check payrexx url for success
+            $successful = $paymentService->paymentSuccessful($user->getPaymentInfo());
+            if (!$successful) {
+                return $this->redirect($user->getInvoiceLink());
+            }
+
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
+            $this->fastSave($user);
         }
 
         if ($user->getPaymentRemainderStatus() !== PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {

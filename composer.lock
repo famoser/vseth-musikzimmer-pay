@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22afd8304c70af6a750cabfc2aafa9b5",
+    "content-hash": "2c95b3655eabb6f082a1dd6f9dc84eb1",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1789,6 +1789,47 @@
                 "random"
             ],
             "time": "2018-07-02T15:55:56+00:00"
+        },
+        {
+            "name": "payrexx/payrexx",
+            "version": "v1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/payrexx/payrexx-php.git",
+                "reference": "2ad4c0d962a5d186c309c10cf5da6cc6e436fb5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/payrexx/payrexx-php/zipball/2ad4c0d962a5d186c309c10cf5da6cc6e436fb5b",
+                "reference": "2ad4c0d962a5d186c309c10cf5da6cc6e436fb5b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Payrexx": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Payrexx AG",
+                    "homepage": "https://www.payrexx.com"
+                }
+            ],
+            "description": "Payrexx PHPLib",
+            "homepage": "https://www.payrexx.com",
+            "keywords": [
+                "gateway",
+                "payment"
+            ],
+            "time": "2020-01-13T14:14:55+00:00"
         },
         {
             "name": "psr/cache",

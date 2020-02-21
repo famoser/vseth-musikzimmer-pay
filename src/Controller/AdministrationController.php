@@ -12,6 +12,7 @@
 namespace App\Controller;
 
 use App\Controller\Administration\Base\BaseController;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,6 +28,10 @@ class AdministrationController extends BaseController
      */
     public function indexAction()
     {
-        return $this->redirectToRoute('administration_users');
+        //get all existing semesters
+        /** @var User[] $users */
+        $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['name' => 'ASC']);
+
+        return $this->render('administration.twig', ['users' => $users]);
     }
 }

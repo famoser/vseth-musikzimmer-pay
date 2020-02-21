@@ -9,15 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Enum;
+namespace App\Service\Interfaces;
 
-use App\Enum\Base\BaseEnum;
+use App\Entity\User;
 
-class PaymentRemainderStatusType extends BaseEnum
+interface BillServiceInterface
 {
-    const NONE = 0;
-    const SEEN = 1;
-    const PAYMENT_STARTED = 2;
-    const PAYMENT_SUCCESSFUL = 3;
-    const PAYMENT_ABORTED = 4;
+    public function createBill(User $user);
 }
