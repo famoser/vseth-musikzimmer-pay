@@ -1,0 +1,25 @@
+index:
+  title: 'organisations'
+  description: 'all organisations'
+  no_organisations_added_yet: 'no organisations added yet'
+  export_authentication_links: 'Authentifizierungslinks exportieren'
+  summary:
+    event_count: '#events'
+    budget_sum: 'total budget'
+    requested_financial_support: 'Finanzierung gewünscht'
+
+new:
+  title: 'new organisation'
+  description: 'add a new organisation'
+
+edit:
+  title: 'edit organisation'
+  description: 'change the organisation'
+
+remove:
+  title: 'remove organisation'
+  description: 'remove the organisation and all associated data'
+events:
+  title: 'show events'
+  description: 'show all future / past events'
+  no_events_added_yet: 'the organisation has not added events yet'
