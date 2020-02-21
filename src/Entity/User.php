@@ -17,6 +17,7 @@ use App\Enum\PaymentRemainderStatusType;
 use App\Enum\UserCategoryType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
 
 /**
  * an event determines how the questionnaire looks like.
@@ -154,14 +155,9 @@ class User extends BaseEntity
      */
     private $reservations;
 
-    public function getAuthenticationCode(): string
+    public function generateAuthenticationCode(): void
     {
-        return $this->authenticationCode;
-    }
-
-    public function setAuthenticationCode(string $authenticationCode): void
-    {
-        $this->authenticationCode = $authenticationCode;
+        $this->authenticationCode = Uuid::uuid4();
     }
 
     public function getEmail(): string

@@ -11,10 +11,14 @@
 
 namespace App\Repository;
 
+use App\Entity\PaymentRemainder;
 use Doctrine\ORM\EntityRepository;
 
 class PaymentRemainderRepository extends EntityRepository
 {
+    /**
+     * @return PaymentRemainder|object|null
+     */
     public function findActive()
     {
         return $this->findOneBy([], ['createdAt' => 'DESC']);

@@ -47,6 +47,7 @@ class LoadUsers extends BaseFixture
         $users = $this->serializer->deserialize($json, User::class . '[]', 'json');
 
         foreach ($users as $user) {
+            $user->generateAuthenticationCode();
             $user->setPaymentRemainder($paymentRemainder);
             $manager->persist($user);
         }

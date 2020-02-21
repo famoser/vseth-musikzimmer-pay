@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * an event determines how the questionnaire looks like.
  *
- * @ORM\Entity(repositoryClass="App\Repository\PaymentRemainderRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  */
 class Reservation extends BaseEntity

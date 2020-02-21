@@ -12,7 +12,7 @@
 namespace App\DataFixtures;
 
 use App\DataFixtures\Base\BaseFixture;
-use App\Entity\Reservation;
+use App\Entity\PaymentRemainder;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -42,10 +42,13 @@ class LoadPaymentRemainder extends BaseFixture
     {
         //prepare resources
         $json = file_get_contents(__DIR__ . '/Resources/payment_remainders.json');
-        /** @var Reservation[] $reservations */
-        $reservations = $this->serializer->deserialize($json, Reservation::class . '[]', 'json');
+        /** @var PaymentRemainder[] $reservations */
+        $reservations = $this->serializer->deserialize($json, PaymentRemainder::class . '[]', 'json');
 
-        $manager->persist($reservations);
+        foreach ($reservations as $reservation) {
+            $manager->persist($reservation);
+        }
+
         $manager->flush();
     }
 

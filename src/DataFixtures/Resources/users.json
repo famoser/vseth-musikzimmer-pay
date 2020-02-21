@@ -4,6 +4,7 @@
     "givenName": "Peter",
     "familyName": "Müller",
     "address": "Rämistrasse 101\n8006 Zürich",
+    "phone": "07900000000",
     "category": 3,
     "discount": 10,
     "discountDescription": "Zwei Reservationen gratis",
