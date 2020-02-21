@@ -12,13 +12,14 @@
 namespace App\DataFixtures;
 
 use App\DataFixtures\Base\BaseFixture;
-use App\Entity\Organisation;
-use Doctrine\Common\Persistence\ObjectManager;
+use App\Entity\PaymentRemainder;
+use App\Entity\User;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class LoadOrganisations extends BaseFixture
+class LoadUsers extends BaseFixture
 {
-    const ORDER = 1;
+    const ORDER = LoadPaymentRemainder::ORDER + 1;
 
     /**
      * @var SerializerInterface
@@ -38,12 +39,16 @@ class LoadOrganisations extends BaseFixture
      */
     public function load(ObjectManager $manager)
     {
-        //prepare resources
-        $json = file_get_contents(__DIR__ . '/Resources/organisations.json');
-        $organisations = $this->serializer->deserialize($json, Organisation::class . '[]', 'json');
+        $paymentRemainder = $manager->getRepository(PaymentRemainder::class)->findActive();
 
-        foreach ($organisations as $organisation) {
-            $manager->persist($organisation);
+        //prepare resources
+        $json = file_get_contents(__DIR__ . '/Resources/users.json');
+        /** @var User[] $users */
+        $users = $this->serializer->deserialize($json, User::class . '[]', 'json');
+
+        foreach ($users as $user) {
+            $user->setPaymentRemainder($paymentRemainder);
+            $manager->persist($user);
         }
 
         $manager->flush();

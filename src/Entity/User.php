@@ -139,4 +139,170 @@ class User extends BaseEntity
      * @ORM\OneToMany(targetEntity="App\Entity\Reservation", mappedBy="user")
      */
     private $reservations;
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function getGivenName(): string
+    {
+        return $this->givenName;
+    }
+
+    public function setGivenName(string $givenName): void
+    {
+        $this->givenName = $givenName;
+    }
+
+    public function getFamilyName(): string
+    {
+        return $this->familyName;
+    }
+
+    public function setFamilyName(string $familyName): void
+    {
+        $this->familyName = $familyName;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): void
+    {
+        $this->address = $address;
+    }
+
+    public function getPhone(): string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function getCategory(): int
+    {
+        return $this->category;
+    }
+
+    public function setCategory(int $category): void
+    {
+        $this->category = $category;
+    }
+
+    public function getDiscount(): int
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(int $discount): void
+    {
+        $this->discount = $discount;
+    }
+
+    public function getDiscountDescription(): ?string
+    {
+        return $this->discountDescription;
+    }
+
+    public function setDiscountDescription(?string $discountDescription): void
+    {
+        $this->discountDescription = $discountDescription;
+    }
+
+    public function getLastPayedPeriodicFeeEnd(): ?\DateTime
+    {
+        return $this->lastPayedPeriodicFeeEnd;
+    }
+
+    public function setLastPayedPeriodicFeeEnd(?\DateTime $lastPayedPeriodicFeeEnd): void
+    {
+        $this->lastPayedPeriodicFeeEnd = $lastPayedPeriodicFeeEnd;
+    }
+
+    public function getAmountOwned(): int
+    {
+        return $this->amountOwned;
+    }
+
+    public function setAmountOwned(int $amountOwned): void
+    {
+        $this->amountOwned = $amountOwned;
+    }
+
+    public function getAmountOwnedWithFees(): int
+    {
+        return $this->amountOwnedWithFees;
+    }
+
+    public function setAmountOwnedWithFees(int $amountOwnedWithFees): void
+    {
+        $this->amountOwnedWithFees = $amountOwnedWithFees;
+    }
+
+    public function getInvoiceHash(): ?string
+    {
+        return $this->invoiceHash;
+    }
+
+    public function setInvoiceHash(?string $invoiceHash): void
+    {
+        $this->invoiceHash = $invoiceHash;
+    }
+
+    public function getPaymentRemainderStatus(): int
+    {
+        return $this->paymentRemainderStatus;
+    }
+
+    public function setPaymentRemainderStatus(int $paymentRemainderStatus): void
+    {
+        $this->paymentRemainderStatus = $paymentRemainderStatus;
+    }
+
+    public function getPaymentRemainderStatusAt(): ?\DateTime
+    {
+        return $this->paymentRemainderStatusAt;
+    }
+
+    public function setPaymentRemainderStatusAt(?\DateTime $paymentRemainderStatusAt): void
+    {
+        $this->paymentRemainderStatusAt = $paymentRemainderStatusAt;
+    }
+
+    public function getPaymentRemainder(): ?PaymentRemainder
+    {
+        return $this->paymentRemainder;
+    }
+
+    public function setPaymentRemainder(?PaymentRemainder $paymentRemainder): void
+    {
+        $this->paymentRemainder = $paymentRemainder;
+    }
+
+    /**
+     * @return Reservation[]|ArrayCollection
+     */
+    public function getReservations()
+    {
+        return $this->reservations;
+    }
+
+    /**
+     * @param Reservation[]|ArrayCollection $reservations
+     */
+    public function setReservations($reservations): void
+    {
+        $this->reservations = $reservations;
+    }
 }
