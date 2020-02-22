@@ -7,3 +7,7 @@ edit_discount:
 close_invoice:
   successful: 'closed invoice for email'
   title: 'close invoice_id'
+
+send_payment_remainder:
+  title: 'send payment remainder'
+  successful: 'sent payment remainder to email'

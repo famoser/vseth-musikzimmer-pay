@@ -9,16 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Enum;
+namespace App\Service\Interfaces;
 
-use App\Enum\Base\BaseEnum;
+use App\Entity\User;
 
-class PaymentRemainderStatusType extends BaseEnum
+interface UserPaymentServiceInterface
 {
-    const NONE = 0;
-    const SENT = 1;
-    const SEEN = 2;
-    const PAYMENT_STARTED = 3;
-    const PAYMENT_SUCCESSFUL = 4;
-    const PAYMENT_ABORTED = 5;
+    public function closeInvoice(User $user);
+
+    public function sendPaymentRemainder(User $user);
 }

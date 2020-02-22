@@ -378,4 +378,9 @@ class User extends BaseEntity
 
         return $recipient;
     }
+
+    public function getAuthenticationCode(): string
+    {
+        return $this->authenticationCode;
+    }
 }

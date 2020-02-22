@@ -12,4 +12,4 @@ import {faUser} from '@fortawesome/pro-light-svg-icons/faUser'
 import {faCopy} from '@fortawesome/pro-light-svg-icons/faCopy'
 
 // add icons
-library.add(faPlus, faTrash, faPencil, faEye, faChartArea, faEnvelope, faUser, faCopy);
+library.add(faPlus, faTrash, faPencil, faEye, faChartArea, faEnvelope, faUser, faCopy, faEnvelope);

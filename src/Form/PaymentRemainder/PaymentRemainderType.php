@@ -14,7 +14,6 @@ namespace App\Form\PaymentRemainder;
 use App\Entity\PaymentRemainder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -25,12 +24,11 @@ class PaymentRemainderType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class);
-        $builder->add('subject', TextType::class);
-        $builder->add('body', TextareaType::class);
-        $builder->add('fee', NumberType::class);
-        $builder->add('dueAt', DateTimeType::class);
-        $builder->add('testEmail', EmailType::class, ['mapped' => false, 'required' => false]);
+        $builder->add('name', TextType::class, ['help' => 'help.name']);
+        $builder->add('subject', TextType::class, ['help' => 'help.subject']);
+        $builder->add('body', TextareaType::class, ['help' => 'help.body']);
+        $builder->add('fee', NumberType::class, ['help' => 'help.fee']);
+        $builder->add('dueAt', DateTimeType::class, ['widget' => 'single_text']);
     }
 
     public function configureOptions(OptionsResolver $resolver)

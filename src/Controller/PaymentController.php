@@ -41,8 +41,10 @@ class PaymentController extends BaseController
             return $this->redirect($user->getInvoiceLink());
         }
 
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SEEN);
-        $this->fastSave($user);
+        if (\in_array('ROLE_USER', $this->getUser()->getRoles(), true)) {
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SEEN);
+            $this->fastSave($user);
+        }
 
         $bill = $billService->createBill($user);
         $setting = $settingsService->get();

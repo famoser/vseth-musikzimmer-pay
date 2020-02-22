@@ -13,10 +13,9 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
-use App\Enum\PaymentRemainderStatusType;
 use App\Form\User\EditDiscountType;
 use App\Model\Breadcrumb;
-use App\Service\Interfaces\PaymentServiceInterface;
+use App\Service\Interfaces\UserPaymentServiceInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,14 +73,26 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function closeInvoiceAction(Request $request, User $user, TranslatorInterface $translator, PaymentServiceInterface $paymentService)
+    public function closeInvoiceAction(User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
     {
-        $paymentService->closePayment($user->getPaymentInfo());
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SEEN);
-        $user->clearPaymentInfo();
-        $this->fastSave($user);
+        $userPaymentService->closeInvoice($user);
 
         $invoiceClosed = $translator->trans('close_invoice.successful', ['email' => $user->getEmail()], 'administration_user');
+        $this->displaySuccess($invoiceClosed);
+
+        return $this->redirectToRoute('administration');
+    }
+
+    /**
+     * @Route("/{user}/send_payment_remainder", name="administration_user_send_payment_remainder")
+     *
+     * @return Response
+     */
+    public function sendPaymentRemainderAction(User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    {
+        $userPaymentService->sendPaymentRemainder($user);
+
+        $invoiceClosed = $translator->trans('send_payment_remainder.successful', ['email' => $user->getEmail()], 'administration_user');
         $this->displaySuccess($invoiceClosed);
 
         return $this->redirectToRoute('administration');

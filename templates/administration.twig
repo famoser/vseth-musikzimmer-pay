@@ -9,7 +9,32 @@
     <div class="container card">
         <div class="card-body">
             {% if payment_remainder is not null %}
-
+                <h2>{{ "entity.name"|trans({}, "entity_payment_remainder") }}</h2>
+                <div class="row">
+                    <div class="col">
+                        <p>
+                            <b>{{ "name"|trans({}, "entity_payment_remainder") }}</b><br/>
+                            {{ payment_remainder.name }}
+                            <br/>
+                            <a href="{{ path("administration_payment_remainder_edit", {paymentRemainder: payment_remainder.id}) }}">
+                                {{ "edit.title"|trans({}, "administration_payment_remainder") }}
+                            </a>
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p>
+                            <b>{{ "fee"|trans({}, "entity_payment_remainder") }}</b><br/>
+                            CHF {{ payment_remainder.fee }}.00
+                        </p>
+                    </div>
+                    <div class="col">
+                        <p>
+                            <b>{{ "due_at"|trans({}, "entity_payment_remainder") }}</b><br/>
+                            {{ payment_remainder.dueAt|dateFormat }}
+                        </p>
+                    </div>
+                </div>
+                <hr/>
             {% else %}
                 <div class="alert alert-info">
                     <p>{{ "index.no_payment_remainder_yet"|trans }}:
@@ -32,10 +57,8 @@
             <th>{{ "category"|trans({}, "entity_user") }}</th>
             <th>{{ "amount_owed"|trans({}, "entity_user") }}</th>
             <th>{{ "discount"|trans({}, "entity_user") }}</th>
-            {% if payment_remainder is not null %}
-                <th>{{ "payment_remainder_status"|trans({}, "entity_user") }}</th>
-                <th class="minimal-width"></th>
-            {% endif %}
+            <th>{{ "payment_remainder_status"|trans({}, "entity_user") }}</th>
+            <th class="minimal-width"></th>
         </tr>
         </thead>
         <tbody>
@@ -52,25 +75,36 @@
                         <i class="fal fa-pencil"></i>
                     </a>
                 </td>
-                {% if payment_remainder is not null %}
-                    <td>
+                <td>
+                    {% if (user.paymentRemainderStatus != 0) %}
                         {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
-                        {% if (user.paymentRemainderStatus == 2) %}
-                            <br/>
-                            <a href="{{ user.invoiceLink }}"
-                               target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
-                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                    {% endif %}
+
+                    {% if (user.paymentRemainderStatus == 2) %}
+                        <br/>
+                        <a href="{{ user.invoiceLink }}"
+                           target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
+                        <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                    {% endif %}
+                </td>
+                <td>
+
+                    <div class="btn-group">
+                        {% if user.paymentRemainderStatus != 4 %}
+                            <a class="btn btn-outline-secondary"
+                               href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
+                                <i class="fal fa-envelope"></i>
+                            </a>
                         {% endif %}
-                    </td>
-                    <td>
-                        <div class="btn-group">
+
+                        {% if user.paymentRemainderStatus != 0 %}
                             <a class="btn btn-outline-secondary"
                                href="{{ path("payment_index", {"user" : user.id}) }}">
                                 <i class="fal fa-user"></i>
                             </a>
-                        </div>
-                    </td>
-                {% endif %}
+                        {% endif %}
+                    </div>
+                </td>
             </tr>
         {% endfor %}
         </tbody>

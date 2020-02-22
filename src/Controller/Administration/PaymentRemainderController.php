@@ -13,12 +13,7 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
-use App\Entity\User;
-use App\Enum\PaymentRemainderStatusType;
-use App\Form\PaymentRemainder\PaymentRemainderType;
 use App\Model\Breadcrumb;
-use App\Service\Interfaces\PaymentServiceInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,63 +27,78 @@ class PaymentRemainderController extends BaseController
     /**
      * @Route("/new", name="administration_payment_remainder_new")
      *
+     * @throws \Exception
+     *
      * @return Response
      */
-    public function newAction(Request $request, PaymentServiceInterface $paymentService, TranslatorInterface $translator)
+    public function newAction(Request $request, TranslatorInterface $translator)
     {
-        $paymentRemainder = $this->createPaymentRemainder();
+        $paymentRemainder = new PaymentRemainder();
+        $paymentRemainder->setName($translator->trans('default.name', [], 'entity_payment_remainder'));
+        $paymentRemainder->setSubject($translator->trans('default.subject', [], 'entity_payment_remainder'));
+        $paymentRemainder->setBody($translator->trans('default.body', ['support_email' => $this->getParameter('REPLY_EMAIL')], 'entity_payment_remainder'));
 
-        //create persist callable
-        $myOnSuccessCallable = function ($form) use ($paymentRemainder, $paymentService, $translator) {
-            $this->closeOpenPayments($paymentService); // if new payment remainder is created
+        $paymentRemainder->setFee(0);
+        $paymentRemainder->setDueAt((new \DateTime())->add(new \DateInterval('P1M')));
 
-            return $form;
-        };
-
-        //handle the form
-        $buttonLabel = $translator->trans('form.submit_buttons.update', [], 'framework');
-        $myForm = $this->handleForm(
-            $this->createForm(PaymentRemainderType::class, $paymentRemainder)
-                ->add('submit', SubmitType::class, ['label' => $buttonLabel, 'translation_domain' => false])
-                ->add('send_test_email', SubmitType::class, ['label' => $buttonLabel, 'translation_domain' => false]),
+        //process form
+        $saved = false;
+        $myForm = $this->handleCreateForm(
             $request,
-            $myOnSuccessCallable
-        );
+            $paymentRemainder,
+            function () use ($paymentRemainder, $translator, &$saved) {
+                if (!$this->ensureValidPaymentRemainder($paymentRemainder, $translator)) {
+                    return false;
+                }
 
+                $saved = true;
+
+                return true;
+            }
+        );
         if ($myForm instanceof Response) {
             return $myForm;
+        }
+
+        if ($saved) {
+            return $this->redirectToRoute('administration');
         }
 
         return $this->render('administration/payment_remainder/new.html.twig', ['form' => $myForm->createView()]);
     }
 
-    private function createPaymentRemainder()
+    /**
+     * @Route("/{paymentRemainder}/edit", name="administration_payment_remainder_edit")
+     *
+     * @return Response
+     */
+    public function editAction(Request $request, PaymentRemainder $paymentRemainder, TranslatorInterface $translator)
     {
-        $paymentRemainder = new PaymentRemainder();
-        $paymentRemainder->setName('Invoice / Rechnung');
-        $paymentRemainder->setSubject('[VSETH] music rooms invoice 2019 / Musikzimmer Rechnung 2019');
+        //process form
+        $myForm = $this->handleUpdateForm($request, $paymentRemainder, function () use ($paymentRemainder, $translator) {
+            return $this->ensureValidPaymentRemainder($paymentRemainder, $translator);
+        });
 
-        $supportEmail = $this->getParameter('REPLY_EMAIL');
-        $german = "Hallo (name)\n\nDer VSETH dankt für die Nutzung der Musikzimmer!\nUm den offenen Bertrag von 2019 zu zahlen bitte folge dem Link: (url)\n\nLiebe Grüsse\nVSETH\n\nPS: Bitte antworte nicht auf diese Mail. Wenn du Fragen hast, wende dich an " . $supportEmail;
-        $english = "Hi (name)\n\nVSETH thanks you for using the music rooms!\nTo pay your open fees from 2019, please follow the link: (url)\n\nBest regards\nVSETH\n\nPS: Please do not answer this mail. If you have questions write us at " . $supportEmail;
-        $paymentRemainder->setBody("(english E-Mail below)\n\n" . $german . "\n\n\n" . $english);
+        if ($myForm instanceof Response) {
+            return $myForm;
+        }
 
-        $paymentRemainder->setFee(0);
-        $paymentRemainder->setDueAt((new \DateTime())->add(new \DateInterval('P1M')));
-
-        return $paymentRemainder;
+        return $this->render('administration/payment_remainder/edit.html.twig', ['form' => $myForm->createView()]);
     }
 
-    private function closeOpenPayments(PaymentServiceInterface $paymentService)
+    /**
+     * @return bool
+     */
+    private function ensureValidPaymentRemainder(PaymentRemainder $paymentRemainder, TranslatorInterface $translator)
     {
-        /** @var User[] $usersWithOpenPayment */
-        $usersWithOpenPayment = $this->getDoctrine()->getRepository(User::class)->findBy(['paymentRemainderStatus' => PaymentRemainderStatusType::PAYMENT_STARTED]);
-        foreach ($usersWithOpenPayment as $userWithOpenPayment) {
-            $paymentService->closePayment($userWithOpenPayment->getPaymentInfo());
-            $userWithOpenPayment->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_ABORTED);
-            $userWithOpenPayment->clearPaymentInfo();
-            $this->fastSave($userWithOpenPayment);
+        if (mb_strrpos($paymentRemainder->getBody(), '(url)') === false) {
+            $error = $translator->trans('new.error.missing_url', [], 'administration_payment_remainder');
+            $this->displayError($error);
+
+            return false;
         }
+
+        return true;
     }
 
     /**
