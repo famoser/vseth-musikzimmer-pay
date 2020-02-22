@@ -1,0 +1,4 @@
+new:
+  title: "Create payment remainder"
+  description: "Send a payment remainder to all users which have not payed yet."
+  success: "Payment remainder has been sent to user_count users."

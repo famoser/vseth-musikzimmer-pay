@@ -3,3 +3,4 @@ index:
   description: "bill reservations within specific time period"
   no_users: "no users added"
   view_invoice: 'view invoice_id'
+  no_payment_remainder_yet: 'preview the list of users & check if the numbers make sense. if they do, create a payment remainder which sends a payment link to the users'

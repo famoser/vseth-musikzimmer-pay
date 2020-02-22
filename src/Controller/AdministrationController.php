@@ -12,6 +12,7 @@
 namespace App\Controller;
 
 use App\Controller\Administration\Base\BaseController;
+use App\Entity\PaymentRemainder;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,6 +36,8 @@ class AdministrationController extends BaseController
             return $this->redirectToRoute('administration_import');
         }
 
-        return $this->render('administration.twig', ['users' => $users]);
+        $activePaymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
+
+        return $this->render('administration.twig', ['users' => $users, 'payment_remainder' => $activePaymentRemainder]);
     }
 }
