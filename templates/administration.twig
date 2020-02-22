@@ -8,7 +8,13 @@
 {% block pre_large_content %}
     <div class="container card">
         <div class="card-body">
-            {% if payment_remainder is not null %}
+            {% if payment_remainder is null %}
+                <div class="alert alert-info">
+                    <p>{{ "index.no_payment_remainder_yet"|trans }}:
+                        <a href="{{ path("administration_payment_remainder_new") }}">{{ "new.title"|trans({}, "administration_payment_remainder") }}</a>.
+                    </p>
+                </div>
+            {% else %}
                 <h2>{{ "entity.name"|trans({}, "entity_payment_remainder") }}</h2>
                 <div class="row">
                     <div class="col">
@@ -47,19 +53,20 @@
                        href="{{ path("administration_payment_remainder_send") }}">{{ "send.title"|trans({}, "administration_payment_remainder") }}</a>
                 {% endif %}
                 <hr/>
-            {% else %}
-                <div class="alert alert-info">
-                    <p>{{ "index.no_payment_remainder_yet"|trans }}:
-                        <a href="{{ path("administration_payment_remainder_new") }}">{{ "new.title"|trans({}, "administration_payment_remainder") }}</a>.
-                    </p>
-                </div>
+                <p>
+                    {{ "index.owed_amount_total"|trans({user_count: payment_statistics.owedAmountUserCount, total: payment_statistics.owedAmountTotal}) }}
+                    <br/>
+                    {{ "index.payed_amount_total"|trans({user_count: payment_statistics.payedAmountUserCount, total: payment_statistics.payedAmountTotal}) }}
+                    <br/>
+                    {{ "index.discount_total"|trans({user_count: payment_statistics.discountUserCount, total: payment_statistics.discountTotal}) }}
+                </p>
             {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block large_content %}
-    <table class="table table-striped">
+    <table class="table table-striped sortable">
         <thead>
         <tr>
             <th>{{ "email"|trans({}, "entity_user") }}</th>
@@ -95,14 +102,17 @@
                             {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
                         {% endif %}
 
-                        {% if user.invoiceLink is not null %}
+                        {% if user.paymentRemainderStatus == 3 %}
                             <br/>
                             <a href="{{ user.invoiceLink }}"
                                target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a>
-                            {% if (user.paymentRemainderStatus == 3) %}
-                                | <a
-                                    href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
-                            {% endif %}
+                            |
+                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                        {% endif %}
+
+                        {% if user.paymentRemainderStatus == 4 %}
+                            <br/>
+                            <a href="https://{{ payrexx_instance }}.payrexx.com/cadmin/index.php?cmd=checkout&act=payments&id={{ user.transactionId }}">{{ "index.view_transaction"|trans({transaction_id: user.transactionId }) }}</a>
                         {% endif %}
                     </td>
                     <td>

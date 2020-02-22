@@ -13,6 +13,7 @@ namespace App\Service\Interfaces;
 
 use App\Model\Bill;
 use App\Model\PaymentInfo;
+use App\Model\TransactionInfo;
 
 interface PaymentServiceInterface
 {
@@ -21,14 +22,12 @@ interface PaymentServiceInterface
      *
      * @return PaymentInfo
      */
-    public function startPayment(Bill $bill);
+    public function startPayment(Bill $bill, string $successUrl);
 
     /**
-     * @throws \Payrexx\PayrexxException
-     *
      * @return bool
      */
-    public function paymentSuccessful(PaymentInfo $paymentInfo);
+    public function paymentSuccessful(PaymentInfo $paymentInfo, ?TransactionInfo &$transactionInfo);
 
     /**
      * @throws \Payrexx\PayrexxException

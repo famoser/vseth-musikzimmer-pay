@@ -8,7 +8,7 @@
 
 {% block form_description %}
     <p>
-        {{ user.givenName }}{{ user.familyName }} <br/>
+        {{ user.givenName }} {{ user.familyName }} <br/>
         {{ user.address|nl2br }}
     </p>
     <p>
@@ -16,7 +16,7 @@
         {{ user.phone }}
     </p>
     <p>
-        {{ user.category|categoryText }}<br/>
+        {{ "category"|trans({}, "entity_user") }}: {{ user.category|categoryText }}<br/>
         {{ "entity.plural"|trans({}, "entity_reservation") }}: {{ user.reservations|length }}<br/>
         {{ "amount_owed"|trans({}, "entity_user") }}: {{ user.amountOwed }}
     </p>

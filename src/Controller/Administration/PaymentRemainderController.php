@@ -130,7 +130,6 @@ class PaymentRemainderController extends BaseController
         $testUser->setLastPayedPeriodicFeeEnd(null);
         $testUser->setDiscount(0);
         $testUser->setAmountOwed(26);
-        $testUser->setAmountOwedWithFees(26);
         $testUser->generateAuthenticationCode();
 
         $testReservation = new Reservation();

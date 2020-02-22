@@ -25,3 +25,8 @@ index:
     bill_fee: "dunning charge"
     bill_fee_help: "if an invoice is payed too late, we are unfortunately required to add a dunning charge."
     discount: "discount"
+
+successful:
+  title: 'Payment successful'
+  description: "Bill payed in full"
+  thanks: "Thanks :)"

@@ -13,9 +13,11 @@ namespace App\Service;
 
 use App\Model\Bill;
 use App\Model\PaymentInfo;
+use App\Model\TransactionInfo;
 use App\Service\Interfaces\PaymentServiceInterface;
-use Payrexx\Models\Request\Invoice;
+use Payrexx\Models\Response\Invoice;
 use Payrexx\Payrexx;
+use Payrexx\PayrexxException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -41,8 +43,6 @@ class PaymentService implements PaymentServiceInterface
      */
     private $translator;
 
-    private $payrexx;
-
     public function __construct(ParameterBagInterface $parameterBag, TranslatorInterface $translator)
     {
         $this->payrexxInstanceName = $parameterBag->get('PAYREXX_INSTANCE');
@@ -53,7 +53,7 @@ class PaymentService implements PaymentServiceInterface
     }
 
     /**
-     * @throws \Payrexx\PayrexxException
+     * @throws PayrexxException
      *
      * @return Payrexx
      */
@@ -65,7 +65,7 @@ class PaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function startPayment(Bill $bill)
+    public function startPayment(Bill $bill, string $successUrl)
     {
         $invoice = new Invoice();
         $invoice->setReferenceId($bill->getId()); // info for payment link (reference id)
@@ -80,6 +80,7 @@ class PaymentService implements PaymentServiceInterface
         $invoice->setPurpose($purpose);
 
         $invoice->setPsp($this->payrexxPsp); // see http://developers.payrexx.com/docs/miscellaneous
+        $invoice->setSuccessRedirectUrl($successUrl);
 
         // don't forget to multiply by 100
         $invoice->setAmount($bill->getTotal() * 100);
@@ -92,7 +93,8 @@ class PaymentService implements PaymentServiceInterface
         $invoice->addField($type = 'forename', true, $recipient->getGivenName());
         $invoice->addField($type = 'surname', true, $recipient->getFamilyName());
         $invoice->addField($type = 'street', true, $recipient->getStreet());
-        $invoice->addField($type = 'city', true, $recipient->getCity());
+        $invoice->addField($type = 'postcode', true, $recipient->getPostcode());
+        $invoice->addField($type = 'place', true, $recipient->getPlace());
         $invoice->addField($type = 'country', true, 'CH');
 
         /*
@@ -116,17 +118,28 @@ class PaymentService implements PaymentServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function paymentSuccessful(PaymentInfo $paymentInfo)
+    public function paymentSuccessful(PaymentInfo $paymentInfo, ?TransactionInfo &$transactionInfo)
     {
         $payrexx = $this->getPayrexx();
 
         $invoice = new Invoice();
         $invoice->setId($paymentInfo->getInvoiceId());
 
-        /** @var \Payrexx\Models\Response\Invoice $response */
+        /** @var Invoice $response */
         $response = $payrexx->getOne($invoice);
+        if ($response->getStatus() !== 'confirmed') {
+            return false;
+        }
 
-        return $response->getStatus() === 'confirmed';
+        $payedInvoice = $response->getInvoices()[0];
+        $payedAmount = $payedInvoice['products'][0]['price'];
+
+        $payedTransaction = $payedInvoice['transactions'][0];
+        $transactionId = $payedTransaction['uuid'];
+
+        $transactionInfo = new TransactionInfo($payedAmount, $transactionId);
+
+        return true;
     }
 
     /**

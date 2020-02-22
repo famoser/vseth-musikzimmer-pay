@@ -96,7 +96,6 @@ class ImportService implements ImportServiceInterface
         foreach ($users as $user) {
             $amountOwed = $this->billService->getAmountOwed($user);
             $user->setAmountOwed($amountOwed);
-            $user->setAmountOwedWithFees($amountOwed);
         }
     }
 

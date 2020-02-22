@@ -62,6 +62,10 @@
 
     <h2>{{ "model.plural"|trans({}, "model_subscription") }}</h2>
     <p>{{ "index.base_fee.help"|trans }}</p>
+    {% if user.lastPayedPeriodicFeeEnd is not null %}
+        <p>{{ "last_payed_periodic_feed_end"|trans({}, "entity_user") }}:
+            {{ user.lastPayedPeriodicFeeEnd|dateFormat }}</p>
+    {% endif %}
     <table class="table table-striped">
         <thead>
         <tr>

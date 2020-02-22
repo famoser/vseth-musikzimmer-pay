@@ -36,12 +36,12 @@ class Recipient
     /**
      * @var string|null
      */
-    private $addressLine2;
+    private $postcode;
 
     /**
      * @var string|null
      */
-    private $city;
+    private $place;
 
     public function getEmail(): string
     {
@@ -83,13 +83,23 @@ class Recipient
         $this->street = $street;
     }
 
-    public function getCity(): ?string
+    public function getPostcode(): ?string
     {
-        return $this->city;
+        return $this->postcode;
     }
 
-    public function setCity(?string $city): void
+    public function setPostcode(?string $postcode): void
     {
-        $this->city = $city;
+        $this->postcode = $postcode;
+    }
+
+    public function getPlace(): ?string
+    {
+        return $this->place;
+    }
+
+    public function setPlace(?string $place): void
+    {
+        $this->place = $place;
     }
 }

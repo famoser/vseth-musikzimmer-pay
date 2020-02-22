@@ -14,6 +14,7 @@ namespace App\Controller;
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
 use App\Entity\User;
+use App\Model\PaymentStatistics;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -37,7 +38,13 @@ class AdministrationController extends BaseController
         }
 
         $activePaymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
+        $paymentStatistics = new PaymentStatistics();
+        if ($activePaymentRemainder !== null) {
+            foreach ($users as $user) {
+                $paymentStatistics->registerUser($user, $activePaymentRemainder->getFee());
+            }
+        }
 
-        return $this->render('administration.twig', ['users' => $users, 'payment_remainder' => $activePaymentRemainder]);
+        return $this->render('administration.twig', ['users' => $users, 'payment_remainder' => $activePaymentRemainder, 'payment_statistics' => $paymentStatistics]);
     }
 }

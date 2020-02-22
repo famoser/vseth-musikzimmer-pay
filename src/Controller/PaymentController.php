@@ -14,12 +14,14 @@ namespace App\Controller;
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
+use App\Model\TransactionInfo;
 use App\Security\Voter\Base\BaseVoter;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
 use App\Service\Interfaces\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/payment")
@@ -31,14 +33,14 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(User $user, BillServiceInterface $billService, SettingsServiceInterface $settingsService)
+    public function indexAction(User $user, BillServiceInterface $billService, SettingsServiceInterface $settingsService, PaymentServiceInterface $paymentService)
     {
         $this->ensureAccessGranted($user);
 
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         } elseif ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
-            return $this->redirect($user->getInvoiceLink());
+            return $this->redirectToRoute('payment_confirm', ['user' => $user->getId()]);
         }
 
         if (\in_array('ROLE_USER', $this->getUser()->getRoles(), true)) {
@@ -62,15 +64,25 @@ class PaymentController extends BaseController
         $this->ensureAccessGranted($user);
 
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
-            return $this->redirect($user->getInvoiceLink());
+            /** @var TransactionInfo $transactionInfo */
+            $successful = $paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
+            if (!$successful) {
+                return $this->redirect($user->getInvoiceLink());
+            }
+
+            $user->setAmountPayed($transactionInfo->getAmount());
+            $user->setTransactionId($transactionInfo->getId());
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
+            $this->fastSave($user);
         }
 
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         }
 
+        $successUrl = $this->generateUrl('payment_successful', ['user' => $user->getId()], RouterInterface::ABSOLUTE_URL);
         $bill = $billService->createBill($user);
-        $paymentInfo = $paymentService->startPayment($bill);
+        $paymentInfo = $paymentService->startPayment($bill, $successUrl);
 
         $user->writePaymentInfo($paymentInfo);
         $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
@@ -89,13 +101,7 @@ class PaymentController extends BaseController
         $this->ensureAccessGranted($user);
 
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
-            $successful = $paymentService->paymentSuccessful($user->getPaymentInfo());
-            if (!$successful) {
-                return $this->redirect($user->getInvoiceLink());
-            }
-
-            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
-            $this->fastSave($user);
+            return $this->redirectToRoute('payment_confirm', ['user' => $user->getId()]);
         }
 
         if ($user->getPaymentRemainderStatus() !== PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {

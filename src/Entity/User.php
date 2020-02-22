@@ -109,11 +109,18 @@ class User extends BaseEntity
     private $amountOwed;
 
     /**
-     * @var int
+     * @var int|null
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $amountOwedWithFees;
+    private $amountPayed;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $transactionId;
 
     /**
      * @var string|null
@@ -267,16 +274,6 @@ class User extends BaseEntity
         $this->amountOwed = $amountOwed;
     }
 
-    public function getAmountOwedWithFees(): int
-    {
-        return $this->amountOwedWithFees;
-    }
-
-    public function setAmountOwedWithFees(int $amountOwedWithFees): void
-    {
-        $this->amountOwedWithFees = $amountOwedWithFees;
-    }
-
     public function getInvoiceId(): ?string
     {
         return $this->invoiceId;
@@ -373,7 +370,14 @@ class User extends BaseEntity
         }
 
         if (\count($addressLines) > 1) {
-            $recipient->setCity($addressLines[\count($addressLines) - 1]);
+            $cityLine = $addressLines[\count($addressLines) - 1];
+            $firstSpace = mb_strpos($cityLine, ' ');
+            if ($firstSpace !== false) {
+                $recipient->setPostcode(mb_substr($cityLine, 0, $firstSpace));
+                $recipient->setPlace(mb_substr($cityLine, $firstSpace + 1));
+            } else {
+                $recipient->setPlace($cityLine);
+            }
         }
 
         return $recipient;
@@ -382,5 +386,25 @@ class User extends BaseEntity
     public function getAuthenticationCode(): string
     {
         return $this->authenticationCode;
+    }
+
+    public function getAmountPayed(): ?int
+    {
+        return $this->amountPayed;
+    }
+
+    public function setAmountPayed(?int $amountPayed): void
+    {
+        $this->amountPayed = $amountPayed;
+    }
+
+    public function getTransactionId(): ?string
+    {
+        return $this->transactionId;
+    }
+
+    public function setTransactionId(?string $transactionId): void
+    {
+        $this->transactionId = $transactionId;
     }
 }
