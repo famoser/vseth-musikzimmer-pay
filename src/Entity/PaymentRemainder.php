@@ -77,6 +77,11 @@ class PaymentRemainder extends BaseEntity
      */
     private $users;
 
+    private function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
+
     public function getName(): string
     {
         return $this->name;

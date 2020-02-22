@@ -14,6 +14,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Enum\RoomType;
 use App\Enum\UserCategoryType;
+use App\Helper\DateTimeHelper;
 use App\Model\Bill;
 use App\Model\Bill\Reservation;
 use App\Model\Bill\Subscription;
@@ -59,23 +60,14 @@ class BillService implements BillServiceInterface
         $bill->setPeriodEnd($setting->getPeriodEnd());
         $bill->setCategory($user->getCategory());
 
-        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory());
+        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal);
         $bill->setReservations($reservations);
-        $reservationsSubtotal = 0;
-        foreach ($reservations as $reservation) {
-            $reservationsSubtotal += $reservation->getTotal();
-        }
         $bill->setReservationsSubtotal($reservationsSubtotal);
         $bill->setTotal($bill->getTotal() + $reservationsSubtotal);
 
         $bill->setLastPayedSubscriptionEnd($user->getLastPayedPeriodicFeeEnd());
-        $subscriptions = $this->getSubscriptions($reservations, $user->getLastPayedPeriodicFeeEnd(), $user->getCategory());
+        $subscriptions = $this->getSubscriptions($reservations, $user->getLastPayedPeriodicFeeEnd(), $user->getCategory(), $subscriptionsSubtotal);
         $bill->setSubscriptions($subscriptions);
-
-        $subscriptionsSubtotal = 0;
-        foreach ($subscriptions as $subscription) {
-            $subscriptionsSubtotal += $subscription->getPrice();
-        }
         $bill->setSubscriptionsSubtotal($subscriptionsSubtotal);
         $bill->setTotal($bill->getTotal() + $subscriptionsSubtotal);
 
@@ -91,12 +83,28 @@ class BillService implements BillServiceInterface
     }
 
     /**
+     * @throws \Exception
+     *
+     * @return int
+     */
+    public function getAmountOwed(User $user)
+    {
+        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal);
+
+        $this->getSubscriptions($reservations, $user->getLastPayedPeriodicFeeEnd(), $user->getCategory(), $subscriptionsSubtotal);
+
+        return $reservationsSubtotal + $subscriptionsSubtotal;
+    }
+
+    /**
      * @param \App\Entity\Reservation[] $reservations
+     * @param int $reservationTotal
      *
      * @return Reservation[]
      */
-    private function getReservations(array $reservations, int $userCategory)
+    private function getReservations(array $reservations, int $userCategory, &$reservationTotal)
     {
+        $reservationTotal = 0;
         $models = [];
         foreach ($reservations as $reservation) {
             $model = new Reservation();
@@ -112,6 +120,7 @@ class BillService implements BillServiceInterface
             $hours = $this->getTotalHours($duration);
             $model->setTotal($hours * $model->getPricePerHour());
 
+            $reservationTotal += $model->getTotal();
             $models[] = $model;
         }
 
@@ -120,13 +129,17 @@ class BillService implements BillServiceInterface
 
     /**
      * @param Reservation[] $reservations
+     * @param \DateTime $lastPayedPeriodicFeeEnd
+     * @param int $subscriptionTotal
      *
      * @throws \Exception
      *
      * @return Subscription[]
      */
-    private function getSubscriptions(array $reservations, \DateTime $lastPayedPeriodicFeeEnd, int $userCategory)
+    private function getSubscriptions(array $reservations, ?\DateTime $lastPayedPeriodicFeeEnd, int $userCategory, &$subscriptionTotal)
     {
+        $subscriptionTotal = 0;
+
         $dateFormat = 'Y-m-d';
         $currentLastValidDate = $lastPayedPeriodicFeeEnd !== null ? $lastPayedPeriodicFeeEnd->format($dateFormat) : '';
         /** @var Subscription[] $subscriptions */
@@ -141,10 +154,9 @@ class BillService implements BillServiceInterface
             $subscription->setPrice($this->getSubscriptionPrice($userCategory));
 
             $subscription->setStartAt(new \DateTime($currentDate));
-            $sixMonths = new \DateInterval('P6M');
-            $oneDay = new \DateInterval('P1D');
-            $subscription->setEndAt((clone $subscription->getStartAt())->add($sixMonths)->sub($oneDay));
+            $subscription->setEndAt(DateTimeHelper::getSubscriptionEnd(clone $subscription->getStartAt()));
 
+            $subscriptionTotal += $subscription->getPrice();
             $subscriptions[] = $subscription;
 
             $currentLastValidDate = $subscription->getEndAt()->format($dateFormat);

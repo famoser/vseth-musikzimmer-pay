@@ -157,6 +157,11 @@ class User extends BaseEntity
      */
     private $reservations;
 
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
+
     public function generateAuthenticationCode(): void
     {
         $this->authenticationCode = Uuid::uuid4();
@@ -324,14 +329,6 @@ class User extends BaseEntity
     public function getReservations()
     {
         return $this->reservations;
-    }
-
-    /**
-     * @param Reservation[]|ArrayCollection $reservations
-     */
-    public function setReservations($reservations): void
-    {
-        $this->reservations = $reservations;
     }
 
     public function writePaymentInfo(\App\Model\PaymentInfo $paymentInfo)

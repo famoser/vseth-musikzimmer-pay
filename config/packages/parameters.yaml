@@ -8,4 +8,5 @@ parameters:
   PAYREXX_INSTANCE: '%env(PAYREXX_INSTANCE)%'
   PAYREXX_SECRET: '%env(PAYREXX_SECRET)%'
   PAYREXX_PSP: '%env(PAYREXX_PSP)%'
-  PUBLIC_DIR: "%kernel.root_dir%/../public"
+  PUBLIC_DIR: "%kernel.project_dir%%/public"
+  UPLOAD_DIR: "%kernel.project_dir%%/var/upload"

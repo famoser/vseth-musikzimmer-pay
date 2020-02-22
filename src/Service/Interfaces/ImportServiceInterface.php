@@ -11,18 +11,13 @@
 
 namespace App\Service\Interfaces;
 
-use App\Entity\User;
-use App\Model\Bill;
+use App\Model\ImportStatistics;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-interface BillServiceInterface
+interface ImportServiceInterface
 {
     /**
-     * @return Bill
+     * @return ImportStatistics
      */
-    public function createBill(User $user);
-
-    /**
-     * @return int
-     */
-    public function getAmountOwed(User $user);
+    public function import(UploadedFile $users, UploadedFile $reservations, \DateTime $periodStart, \DateTime $periodEnd);
 }

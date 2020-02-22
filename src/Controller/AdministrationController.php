@@ -28,9 +28,12 @@ class AdministrationController extends BaseController
      */
     public function indexAction()
     {
-        //get all existing semesters
         /** @var User[] $users */
         $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['email' => 'ASC']);
+
+        if (\count($users) === 0) {
+            return $this->redirectToRoute('administration_import');
+        }
 
         return $this->render('administration.twig', ['users' => $users]);
     }
