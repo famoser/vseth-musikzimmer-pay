@@ -13,4 +13,5 @@ send:
   successful: 'emails sent to all users with open payments.'
 
 send_test:
-  title: 'send a test email'
+  title: 'Send a test email'
+  successful: 'a test user with the email test_email has been created / reset and an email has been sent.'

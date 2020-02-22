@@ -72,15 +72,17 @@ class UserPaymentService implements UserPaymentServiceInterface
         $paymentRemainder = $this->doctrine->getRepository(PaymentRemainder::class)->findActive();
 
         $body = $paymentRemainder->getBody();
-        $url = $this->router->generate('login_code', ['code' => $user->getAuthenticationCode()]);
+        $url = $this->router->generate('login_code', ['code' => $user->getAuthenticationCode()], RouterInterface::ABSOLUTE_URL);
         $body = str_replace('(url)', $url, $body);
         $name = $user->getGivenName() . ' ' . $user->getFamilyName();
         $body = str_replace('(name)', $name, $body);
 
         $this->emailService->sendEmail($user->getEmail(), $paymentRemainder->getSubject(), $body);
 
+        if ($user->getPaymentRemainder() !== $paymentRemainder) {
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SENT);
+        }
         $user->setPaymentRemainder($paymentRemainder);
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SENT);
         $this->save($user);
     }
 

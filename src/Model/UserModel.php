@@ -34,12 +34,18 @@ class UserModel implements UserInterface
     private $roles;
 
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * User constructor.
      *
      * @param string[] $roles
      */
-    public function __construct(string $password, string $username, array $roles)
+    public function __construct(int $id, string $password, string $username, array $roles)
     {
+        $this->id = $id;
         $this->password = $password;
         $this->username = $username;
         $this->roles = $roles;
@@ -83,5 +89,10 @@ class UserModel implements UserInterface
     public function eraseCredentials()
     {
         // skipped
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

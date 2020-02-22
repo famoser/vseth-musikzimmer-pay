@@ -11,7 +11,7 @@
 
 namespace App\Security;
 
-use App\Entity\Organisation;
+use App\Entity\User;
 use App\Model\UserModel;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -72,18 +72,18 @@ class UserProvider implements UserProviderInterface
      *
      * @throws UsernameNotFoundException if the user is not found
      *
-     * @return UserInterface
+     * @return UserInterface|UserModel
      */
     public function loadUserByUsername($username)
     {
         if ($username === 'ia@vseth.ethz.ch') {
-            return new UserModel($this->adminPassword, $username, ['ROLE_ADMIN']);
+            return new UserModel(-1, $this->adminPassword, $username, [UserModel::ROLE_ADMIN]);
         }
 
-        /** @var Organisation|null $organisation */
-        $organisation = $this->registry->getRepository(Organisation::class)->findOneBy(['email' => $username]);
-        if (null !== $organisation) {
-            return new UserModel($organisation->getAuthenticationCode(), $organisation->getEmail(), ['ROLE_ORGANISATION']);
+        /** @var User|null $user */
+        $user = $this->registry->getRepository(User::class)->findOneBy(['email' => $username]);
+        if (null !== $user) {
+            return new UserModel($user->getId(), $user->getAuthenticationCode(), $user->getEmail(), [UserModel::ROLE_USER]);
         }
 
         throw new UsernameNotFoundException(sprintf('Username "%s" does not exist in UserProvider.', $username));

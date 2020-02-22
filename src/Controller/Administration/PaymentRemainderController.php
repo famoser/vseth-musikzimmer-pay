@@ -13,7 +13,10 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
+use App\Entity\Reservation;
 use App\Entity\User;
+use App\Enum\RoomType;
+use App\Enum\UserCategoryType;
 use App\Model\Breadcrumb;
 use App\Service\Interfaces\UserPaymentServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,6 +89,61 @@ class PaymentRemainderController extends BaseController
         }
 
         return $this->render('administration/payment_remainder/edit.html.twig', ['form' => $myForm->createView()]);
+    }
+
+    /**
+     * @Route("/send_test", name="administration_payment_remainder_send_test")
+     *
+     * @return Response
+     */
+    public function sendTestAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    {
+        $replyEmail = $this->getParameter('REPLY_EMAIL');
+        $testUser = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $replyEmail]);
+        if ($testUser === null) {
+            $testUser = $this->createTestUser($replyEmail);
+        }
+
+        // close active invoice
+        if ($testUser->getInvoiceId() !== null) {
+            $userPaymentService->closeInvoice($testUser);
+        }
+
+        // send mail
+        $userPaymentService->sendPaymentRemainder($testUser);
+
+        $success = $translator->trans('send_test.successful', ['test_email' => $replyEmail], 'administration_payment_remainder');
+        $this->displaySuccess($success);
+
+        return $this->redirectToRoute('administration');
+    }
+
+    private function createTestUser(string $email): User
+    {
+        $testUser = new User();
+        $testUser->setGivenName('first name (test)');
+        $testUser->setFamilyName('last name (test)');
+        $testUser->setPhone('phone (test)');
+        $testUser->setEmail($email);
+        $testUser->setAddress("steet (test)\ncity (test)");
+        $testUser->setCategory(UserCategoryType::STUDENT);
+        $testUser->setLastPayedPeriodicFeeEnd(null);
+        $testUser->setDiscount(0);
+        $testUser->setAmountOwed(26);
+        $testUser->setAmountOwedWithFees(26);
+        $testUser->generateAuthenticationCode();
+
+        $testReservation = new Reservation();
+        $testReservation->setStart(new \DateTime('01.01.2020 03:00'));
+        $testReservation->setEnd(new \DateTime('01.01.2020 04:00'));
+        $testReservation->setCreatedAt(new \DateTime('01.01.2020 00:00'));
+        $testReservation->setModifiedAt(new \DateTime('01.01.2020 00:00'));
+        $testReservation->setUser($testUser);
+        $testReservation->setRoom(RoomType::UNAUTHORIZED);
+
+        $this->fastSave($testUser, $testReservation);
+
+        return $testUser;
     }
 
     /**

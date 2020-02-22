@@ -4,4 +4,4 @@ index:
   no_users: "no users added"
   view_invoice: 'view invoice_id'
   no_payment_remainder_yet: 'preview the list of users & check if the numbers make sense. if they do, create a payment remainder which sends a payment link to the users'
-  payment_remainder_not_sent: 'not all users have received their remainder email yet. Please be careful; sending a malformed email to 800 people is embarassing! Therefore test the email first. If all went well, send the remainder to all.'
+  payment_remainder_not_sent: 'not all users have received their remainder email yet. Please be careful; sending a malformed email to user_count people is embarrassing! Therefore test the email first. If all went well, send the remainder to all.'

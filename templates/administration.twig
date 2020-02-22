@@ -19,6 +19,9 @@
                             <a href="{{ path("administration_payment_remainder_edit", {paymentRemainder: payment_remainder.id}) }}">
                                 {{ "edit.title"|trans({}, "administration_payment_remainder") }}
                             </a>
+                            <br/>
+                            <a href="{{ path("administration_payment_remainder_send_test") }}">
+                                {{ "send_test.title"|trans({}, "administration_payment_remainder") }}</a>
                         </p>
                     </div>
                     <div class="col">
@@ -35,11 +38,10 @@
                     </div>
                 </div>
                 <p>
-                    <a class="btn btn-secondary">{{ "send_test.title"|trans({}, "administration_payment_remainder") }}</a>
                 </p>
                 {% if not payment_remainder.sentToAll %}
                     <p class="alert alert-warning">
-                        {{ "index.payment_remainder_not_sent"|trans }}
+                        {{ "index.payment_remainder_not_sent"|trans({user_count: users|length}) }}
                     </p>
                     <a class="btn btn-warning"
                        href="{{ path("administration_payment_remainder_send") }}">{{ "send.title"|trans({}, "administration_payment_remainder") }}</a>
@@ -93,11 +95,14 @@
                             {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
                         {% endif %}
 
-                        {% if (user.paymentRemainderStatus == 2) %}
+                        {% if user.invoiceLink is not null %}
                             <br/>
                             <a href="{{ user.invoiceLink }}"
-                               target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
-                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                               target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a>
+                            {% if (user.paymentRemainderStatus == 3) %}
+                                | <a
+                                    href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>
