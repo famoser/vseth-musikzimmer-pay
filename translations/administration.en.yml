@@ -11,5 +11,5 @@ index:
   owed_amount_total: 'user_count users need to pay CHF total.00'
   payed_amount_total: 'user_count users payed CHF total.00'
   discount_total: 'user_count users received a discount of CHF total.00'
-  start_next_period: 'start next payment period (dunning phase)'
+  start_next_period: 'start next dunning phase'
   previous: 'previous'
