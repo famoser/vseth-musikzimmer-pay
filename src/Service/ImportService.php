@@ -137,13 +137,14 @@ class ImportService implements ImportServiceInterface
                     $reservation->setStart(new \DateTime($start));
                     $reservation->setEnd(new \DateTime($data[8]));
 
-                    if ($reservation->getEnd()->format('i') === 59) { // add one minute if datetime ends in :59
-                        $reservation->getEnd()->add(new \DateInterval('PT1M'));
+                    if ($reservation->getEnd()->format('i') === '59') { // add one minute if datetime ends in :59
+                        $newEnd = $reservation->getEnd()->add(new \DateInterval('PT1M'));
+                        $reservation->setEnd($newEnd);
                     }
 
                     // abort if other weird date failures
-                    if ($reservation->getEnd()->format('i') !== 0 || $reservation->getStart()->format('i') !== 0) {
-                        throw new \Exception('can not handle non-full hour start/end times');
+                    if ($reservation->getEnd()->format('i') !== '00' || $reservation->getStart()->format('i') !== '00') {
+                        throw new \Exception('can not handle non-full hour start/end times: start=' . $reservation->getStart()->format('c') . ' end=' . $reservation->getEnd()->format('c'));
                     }
 
                     $reservation->setRoom($data[6]);
@@ -152,8 +153,6 @@ class ImportService implements ImportServiceInterface
                     $reservation->setCreatedAt(new \DateTime($data[3]));
 
                     $reservationsByUser[$user][] = $reservation;
-
-                    return;
 
                     continue;
                 }

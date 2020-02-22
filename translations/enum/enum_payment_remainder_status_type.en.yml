@@ -1,5 +1,5 @@
 none: '-'
-send: "sent"
+sent: "sent"
 seen: 'seen'
 payment_started: "started"
 payment_successful: "successful"

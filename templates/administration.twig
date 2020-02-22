@@ -57,8 +57,10 @@
             <th>{{ "category"|trans({}, "entity_user") }}</th>
             <th>{{ "amount_owed"|trans({}, "entity_user") }}</th>
             <th>{{ "discount"|trans({}, "entity_user") }}</th>
-            <th>{{ "payment_remainder_status"|trans({}, "entity_user") }}</th>
-            <th class="minimal-width"></th>
+            {% if payment_remainder is not null %}
+                <th>{{ "payment_remainder_status"|trans({}, "entity_user") }}</th>
+                <th class="minimal-width"></th>
+            {% endif %}
         </tr>
         </thead>
         <tbody>
@@ -75,36 +77,37 @@
                         <i class="fal fa-pencil"></i>
                     </a>
                 </td>
-                <td>
-                    {% if (user.paymentRemainderStatus != 0) %}
-                        {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
-                    {% endif %}
-
-                    {% if (user.paymentRemainderStatus == 2) %}
-                        <br/>
-                        <a href="{{ user.invoiceLink }}"
-                           target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
-                        <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
-                    {% endif %}
-                </td>
-                <td>
-
-                    <div class="btn-group">
-                        {% if user.paymentRemainderStatus != 4 %}
-                            <a class="btn btn-outline-secondary"
-                               href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
-                                <i class="fal fa-envelope"></i>
-                            </a>
+                {% if payment_remainder is not null %}
+                    <td>
+                        {% if (user.paymentRemainderStatus != 0) %}
+                            {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
                         {% endif %}
 
-                        {% if user.paymentRemainderStatus != 0 %}
-                            <a class="btn btn-outline-secondary"
-                               href="{{ path("payment_index", {"user" : user.id}) }}">
-                                <i class="fal fa-user"></i>
-                            </a>
+                        {% if (user.paymentRemainderStatus == 2) %}
+                            <br/>
+                            <a href="{{ user.invoiceLink }}"
+                               target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a> |
+                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
                         {% endif %}
-                    </div>
-                </td>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            {% if user.paymentRemainderStatus != 4 %}
+                                <a class="btn btn-outline-secondary"
+                                   href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
+                                    <i class="fal fa-envelope"></i>
+                                </a>
+                            {% endif %}
+
+                            {% if user.paymentRemainderStatus != 0 %}
+                                <a class="btn btn-outline-secondary"
+                                   href="{{ path("payment_index", {"user" : user.id}) }}">
+                                    <i class="fal fa-user"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>
