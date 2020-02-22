@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <h2>{{ "entity.plural"|trans({}, "entity_reservation") }}</h2>
+    <h3>{{ "entity.plural"|trans({}, "entity_reservation") }}</h3>
     <p>{{ "index.reservation.help"|trans }}</p>
     <table class="table table-striped">
         <thead>
@@ -60,7 +60,7 @@
         </tbody>
     </table>
 
-    <h2>{{ "model.plural"|trans({}, "model_subscription") }}</h2>
+    <h3>{{ "model.plural"|trans({}, "model_subscription") }}</h3>
     <p>{{ "index.base_fee.help"|trans }}</p>
     {% if user.lastPayedPeriodicFeeEnd is not null %}
         <p>{{ "last_payed_periodic_feed_end"|trans({}, "entity_user") }}:
@@ -88,7 +88,7 @@
     </table>
 
     {% if bill.billFee > 0 or bill.discount > 0 %}
-        <h2>{{ "index.fees.title"|trans }}</h2>
+        <h3>{{ "index.fees.title"|trans }}</h3>
         <table class="table table-striped">
             <thead>
             <tr>

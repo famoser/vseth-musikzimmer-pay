@@ -40,6 +40,10 @@
                         <p>
                             <b>{{ "due_at"|trans({}, "entity_payment_remainder") }}</b><br/>
                             {{ payment_remainder.dueAt|dateFormat }}
+                            <br/>
+                            <a href="{{ path("administration_payment_remainder_new") }}">
+                                {{ "index.start_next_period"|trans }}
+                            </a>
                         </p>
                     </div>
                 </div>
@@ -118,14 +122,14 @@
                     <td>
                         <div class="btn-group">
                             {% if user.paymentRemainderStatus != 4 %}
-                                <a class="btn btn-outline-secondary"
+                                <a class="btn btn-secondary"
                                    href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
                                     <i class="fal fa-envelope"></i>
                                 </a>
                             {% endif %}
 
                             {% if user.paymentRemainderStatus != 0 %}
-                                <a class="btn btn-outline-secondary"
+                                <a class="btn btn-secondary"
                                    href="{{ path("payment_index", {"user" : user.id}) }}">
                                     <i class="fal fa-user"></i>
                                 </a>
