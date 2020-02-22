@@ -78,7 +78,7 @@ class ImportController extends BaseController
             $users = $form->get('users')->getData();
             $importStatistic = $importService->import($users, $reservations, $entity->getPeriodStart(), $entity->getPeriodEnd());
 
-            $successfulText = $translator->trans('index.success', ['user_count' => $importStatistic->getUserCount(), 'reservation_count' => $importStatistic->getReservationCount(), 'amount_owed' => $importStatistic->getTotalAmountOwed()], 'administration_import');
+            $successfulText = $translator->trans('index.success', ['user_count' => $importStatistic->getUserCount(), 'reservation_count' => $importStatistic->getReservationCount(), 'owed_amount' => $importStatistic->getTotalAmountOwed()], 'administration_import');
             $this->displaySuccess($successfulText);
 
             return $this->redirectToRoute('administration');
