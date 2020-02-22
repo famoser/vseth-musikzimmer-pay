@@ -24,7 +24,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * an event determines how the questionnaire looks like.
  *
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class User extends BaseEntity

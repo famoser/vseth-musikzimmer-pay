@@ -34,6 +34,16 @@
                         </p>
                     </div>
                 </div>
+                <p>
+                    <a class="btn btn-secondary">{{ "send_test.title"|trans({}, "administration_payment_remainder") }}</a>
+                </p>
+                {% if not payment_remainder.sentToAll %}
+                    <p class="alert alert-warning">
+                        {{ "index.payment_remainder_not_sent"|trans }}
+                    </p>
+                    <a class="btn btn-warning"
+                       href="{{ path("administration_payment_remainder_send") }}">{{ "send.title"|trans({}, "administration_payment_remainder") }}</a>
+                {% endif %}
                 <hr/>
             {% else %}
                 <div class="alert alert-info">

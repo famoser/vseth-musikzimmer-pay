@@ -7,3 +7,10 @@ new:
 edit:
   title: "Edit payment remainder"
   description: "Change the current payment remainder."
+
+send:
+  title: 'send a remainder to all which have not received one yet'
+  successful: 'emails sent to all users with open payments.'
+
+send_test:
+  title: 'send a test email'

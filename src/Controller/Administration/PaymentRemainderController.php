@@ -13,7 +13,9 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
+use App\Entity\User;
 use App\Model\Breadcrumb;
+use App\Service\Interfaces\UserPaymentServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -84,6 +86,42 @@ class PaymentRemainderController extends BaseController
         }
 
         return $this->render('administration/payment_remainder/edit.html.twig', ['form' => $myForm->createView()]);
+    }
+
+    /**
+     * @Route("/send", name="administration_payment_remainder_send")
+     *
+     * @return Response
+     */
+    public function sendAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    {
+        $paymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
+        if ($paymentRemainder->isSentToAll()) {
+            return $this->redirectToRoute('administration');
+        }
+
+        $notPayedUsers = $this->getDoctrine()->getRepository(User::class)->findByNotPayed();
+        foreach ($notPayedUsers as $notPayedUser) {
+            if ($notPayedUser->getPaymentRemainder() === $paymentRemainder) {
+                continue;
+            }
+
+            // close active invoice
+            if ($notPayedUser->getInvoiceId() !== null) {
+                $userPaymentService->closeInvoice($notPayedUser);
+            }
+
+            // send mail
+            $userPaymentService->sendPaymentRemainder($notPayedUser);
+        }
+
+        $paymentRemainder->setSentToAll(true);
+        $this->fastSave($paymentRemainder);
+
+        $success = $translator->trans('send.successful', [], 'administration_payment_remainder');
+        $this->displaySuccess($success);
+
+        return $this->redirectToRoute('administration');
     }
 
     /**
