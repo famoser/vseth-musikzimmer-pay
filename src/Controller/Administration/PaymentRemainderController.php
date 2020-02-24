@@ -15,6 +15,7 @@ use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
 use App\Entity\Reservation;
 use App\Entity\User;
+use App\Enum\PaymentRemainderStatusType;
 use App\Enum\RoomType;
 use App\Enum\UserCategoryType;
 use App\Model\Breadcrumb;
@@ -44,7 +45,7 @@ class PaymentRemainderController extends BaseController
         $paymentRemainder->setBody($translator->trans('default.body', ['support_email' => $this->getParameter('REPLY_EMAIL')], 'entity_payment_remainder'));
 
         $paymentRemainder->setFee(0);
-        $paymentRemainder->setDueAt((new \DateTime())->add(new \DateInterval('P1M')));
+        $paymentRemainder->setDueAt((new \DateTime('today'))->add(new \DateInterval('P1M1D')));
 
         //process form
         $saved = false;
@@ -104,9 +105,14 @@ class PaymentRemainderController extends BaseController
             $testUser = $this->createTestUser($replyEmail);
         }
 
-        // close active invoice
+        // close or remove active invoice
         if ($testUser->getInvoiceId() !== null) {
-            $userPaymentService->closeInvoice($testUser);
+            if ($testUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+                $testUser->clearPaymentInfo();
+                $this->fastSave($testUser);
+            } else {
+                $userPaymentService->closeInvoice($testUser);
+            }
         }
 
         // send mail

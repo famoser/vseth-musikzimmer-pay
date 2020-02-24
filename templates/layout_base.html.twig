@@ -164,7 +164,16 @@
 
 <div class="footer pb-3">
     <div class="container">
-        <img width="20%" alt="logo VSETH" src="{{ asset("dist/images/vseth.svg") }}">
+        <div class="row">
+            <div class="col">
+                <img class="img-fluid" width="40%" alt="logo VSETH" src="{{ asset("dist/images/vseth.svg") }}">
+            </div>
+            <div class="col">
+                <p class="text-right text-secondary mt-4">
+                    {{ "base.created_by"|trans({}, "layout") }} <a href="https://famoser.ch" target="_blank">famoser.ch</a>
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
