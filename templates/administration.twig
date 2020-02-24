@@ -116,20 +116,21 @@
 
                         {% if user.paymentRemainderStatus == 4 %}
                             <br/>
-                            <a href="https://{{ payrexx_instance }}.payrexx.com/cadmin/index.php?cmd=checkout&act=payments&id={{ user.transactionId }}">{{ "index.view_transaction"|trans({transaction_id: user.transactionId }) }}</a>
+                            <a href="https://{{ payrexx_instance }}.payrexx.com/cadmin/index.php?cmd=checkout&act=payments&id={{ user.transactionId }}"
+                               target="_blank">{{ "index.view_transaction"|trans({transaction_id: user.transactionId }) }}</a>
                         {% endif %}
                     </td>
                     <td>
                         <div class="btn-group">
                             {% if user.paymentRemainderStatus != 4 %}
-                                <a class="btn btn-secondary"
+                                <a class="btn btn-outline-secondary"
                                    href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
                                     <i class="fal fa-envelope"></i>
                                 </a>
                             {% endif %}
 
                             {% if user.paymentRemainderStatus != 0 %}
-                                <a class="btn btn-secondary"
+                                <a class="btn btn-outline-secondary"
                                    href="{{ path("payment_index", {"user" : user.id}) }}">
                                     <i class="fal fa-user"></i>
                                 </a>
