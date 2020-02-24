@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the vseth-semesterly-reports project.
+ * This file is part of the vseth-musikzimmer-pay project.
  *
  * (c) Florian Moser <git@famoser.ch>
  *
@@ -68,7 +68,7 @@ class LoadReservation extends BaseFixture
     private function roundToHour(\DateTime $dateTime)
     {
         $time = $dateTime->format('c');
-        $hourPart = mb_substr($time, 0, \mb_strlen(' 	2004-02-12T15:19'));
+        $hourPart = mb_substr($time, 0, mb_strlen(' 	2004-02-12T15:19'));
 
         return new \DateTime($hourPart . ':00+00:00');
     }

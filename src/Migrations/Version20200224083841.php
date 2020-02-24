@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the vseth-semesterly-reports project.
+ * This file is part of the vseth-musikzimmer-pay project.
  *
  * (c) Florian Moser <git@famoser.ch>
  *

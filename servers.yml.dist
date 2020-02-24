@@ -1,5 +1,5 @@
 .base: &base
-  hostname: semesterly-reports.vseth.famoser.ch
+  hostname: pay.musikzimmer.vseth.famoser.ch
   user: USER
   http_user: USER
   branch: master
