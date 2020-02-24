@@ -18,7 +18,7 @@ set('var_dir', 'var');
 
 // Configuration
 set('repository', 'https://github.com/famoser/vseth-musikzimmer-pay.git');
-set('shared_files', ['.env.local', 'var/data.sqlite']);
+set('shared_files', ['.env.local', 'var/data.sqlite', 'var/upload']);
 set('composer_options', '{{composer_action}} --verbose --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader --no-scripts');
 set('env_file_path', '.env');
 
