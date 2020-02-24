@@ -6471,16 +6471,16 @@
         },
         {
             "name": "famoser/agnes",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/famoser/agnes.git",
-                "reference": "6f1e6928b1c9aed01be2bf4dad0f0f0781cf560f"
+                "reference": "7d2e0f0a9baa0f0836ebfc0e7c9cf2d5287acc2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/famoser/agnes/zipball/6f1e6928b1c9aed01be2bf4dad0f0f0781cf560f",
-                "reference": "6f1e6928b1c9aed01be2bf4dad0f0f0781cf560f",
+                "url": "https://api.github.com/repos/famoser/agnes/zipball/7d2e0f0a9baa0f0836ebfc0e7c9cf2d5287acc2c",
+                "reference": "7d2e0f0a9baa0f0836ebfc0e7c9cf2d5287acc2c",
                 "shasum": ""
             },
             "require": {
@@ -6517,7 +6517,7 @@
                 }
             ],
             "description": "Creates & deploys releases safely to various environments.",
-            "time": "2019-08-21T10:03:09+00:00"
+            "time": "2020-02-24T14:14:10+00:00"
         },
         {
             "name": "friendsofphp/php-cs-fixer",
