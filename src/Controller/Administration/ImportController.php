@@ -102,8 +102,8 @@ class ImportController extends BaseController
         $year = (new \DateTime())->format('Y') - 1;
 
         $setting = new Setting();
-        $setting->setPeriodStart(new \DateTime('01.01.' . $year));
-        $setting->setPeriodEnd(new \DateTime('31.12.' . $year));
+        $setting->setPeriodStart(new \DateTime('01.01.' . $year . ' 00:00:00'));
+        $setting->setPeriodEnd(new \DateTime('31.12.' . $year . ' 23:59:59'));
         $setting->setPaymentPrefix('musikzimmer-' . $year);
 
         return $setting;
