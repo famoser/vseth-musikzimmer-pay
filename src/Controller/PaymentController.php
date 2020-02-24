@@ -33,7 +33,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(User $user, BillServiceInterface $billService, SettingsServiceInterface $settingsService, PaymentServiceInterface $paymentService)
+    public function indexAction(User $user, BillServiceInterface $billService, SettingsServiceInterface $settingsService)
     {
         $this->ensureAccessGranted($user);
 
@@ -57,6 +57,9 @@ class PaymentController extends BaseController
     /**
      * @Route("/{user}/confirm", name="payment_confirm")
      *
+     * @throws \Payrexx\PayrexxException
+     * @throws \Exception
+     *
      * @return Response
      */
     public function confirmAction(User $user, BillServiceInterface $billService, PaymentServiceInterface $paymentService)
@@ -67,6 +70,10 @@ class PaymentController extends BaseController
             /** @var TransactionInfo $transactionInfo */
             $successful = $paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
             if (!$successful) {
+                if ($user->getInvoiceLink() === null) {
+                    throw new \Exception('payment started but no invoice saved');
+                }
+
                 return $this->redirect($user->getInvoiceLink());
             }
 
@@ -96,7 +103,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function successfulAction(User $user, PaymentServiceInterface $paymentService)
+    public function successfulAction(User $user)
     {
         $this->ensureAccessGranted($user);
 

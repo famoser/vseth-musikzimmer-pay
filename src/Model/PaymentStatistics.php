@@ -56,7 +56,7 @@ class PaymentStatistics
             $this->owedAmountTotal += $user->getAmountOwed() + $fees - $user->getDiscount();
         }
 
-        if ($user->getDiscount() !== null) {
+        if ($user->getDiscount() !== 0) {
             ++$this->discountUserCount;
             $this->discountTotal += $user->getDiscount();
         }

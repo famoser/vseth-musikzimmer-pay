@@ -91,6 +91,7 @@ class UserController extends BaseController
     public function sendPaymentRemainderAction(User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
     {
         $userPaymentService->sendPaymentRemainder($user);
+        dump($user);
 
         $invoiceClosed = $translator->trans('send_payment_remainder.successful', ['email' => $user->getEmail()], 'administration_user');
         $this->displaySuccess($invoiceClosed);

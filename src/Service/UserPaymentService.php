@@ -57,6 +57,7 @@ class UserPaymentService implements UserPaymentServiceInterface
 
     /**
      * @throws \Payrexx\PayrexxException
+     * @throws \Exception
      */
     public function closeInvoice(User $user)
     {

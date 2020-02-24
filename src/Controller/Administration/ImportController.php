@@ -48,7 +48,7 @@ class ImportController extends BaseController
             return $this->redirectToRoute('administration');
         }
 
-        $myForm = $this->getForm($request, $settingService, $translator, $importService);
+        $myForm = $this->getForm($request, $translator, $importService);
         if ($myForm instanceof Response) {
             return $myForm;
         }
@@ -63,12 +63,12 @@ class ImportController extends BaseController
      *
      * @return FormInterface
      */
-    private function getForm(Request $request, SettingsServiceInterface $settingService, TranslatorInterface $translator, ImportServiceInterface $importService)
+    private function getForm(Request $request, TranslatorInterface $translator, ImportServiceInterface $importService)
     {
         $entity = $this->getDefaultSetting();
 
         //create persist callable
-        $myOnSuccessCallable = function ($form) use ($entity, $settingService, $translator, $importService) {
+        $myOnSuccessCallable = function ($form) use ($entity, $translator, $importService) {
             /* @var FormInterface $form */
             $this->fastSave($entity);
 

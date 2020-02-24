@@ -14,7 +14,7 @@ namespace App\Model;
 class PaymentInfo
 {
     /**
-     * @var string
+     * @var int
      */
     private $invoiceId;
 
@@ -23,12 +23,12 @@ class PaymentInfo
      */
     private $invoiceLink;
 
-    public function getInvoiceId(): string
+    public function getInvoiceId(): int
     {
         return $this->invoiceId;
     }
 
-    public function setInvoiceId(string $invoiceId): void
+    public function setInvoiceId(int $invoiceId): void
     {
         $this->invoiceId = $invoiceId;
     }

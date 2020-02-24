@@ -61,7 +61,7 @@ class ImportService implements ImportServiceInterface
         $periodStartString = $periodStart->format('Y-m-d');
         $periodEndString = $periodEnd->format('Y-m-d');
 
-        /** @var \DateTime[] $lastSubscriptionEndByUser */
+        /** @var string[] $lastSubscriptionEndByUser */
         $lastSubscriptionEndByUser = [];
         /** @var Reservation[][] $reservationsByUser */
         $reservationsByUser = [];

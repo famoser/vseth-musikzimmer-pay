@@ -14,6 +14,7 @@ namespace App\DataFixtures;
 use App\DataFixtures\Base\BaseFixture;
 use App\Entity\PaymentRemainder;
 use App\Entity\User;
+use App\Enum\PaymentRemainderStatusType;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -48,6 +49,7 @@ class LoadUsers extends BaseFixture
 
         foreach ($users as $user) {
             $user->generateAuthenticationCode();
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SENT);
             $user->setPaymentRemainder($paymentRemainder);
             $manager->persist($user);
         }

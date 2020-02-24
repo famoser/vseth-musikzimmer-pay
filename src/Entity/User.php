@@ -123,9 +123,9 @@ class User extends BaseEntity
     private $transactionId;
 
     /**
-     * @var string|null
+     * @var int|null
      *
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $invoiceId;
 
@@ -171,7 +171,7 @@ class User extends BaseEntity
 
     public function generateAuthenticationCode(): void
     {
-        $this->authenticationCode = Uuid::uuid4();
+        $this->authenticationCode = Uuid::uuid4()->toString();
     }
 
     public function getEmail(): string
@@ -274,12 +274,12 @@ class User extends BaseEntity
         $this->amountOwed = $amountOwed;
     }
 
-    public function getInvoiceId(): ?string
+    public function getInvoiceId(): ?int
     {
         return $this->invoiceId;
     }
 
-    public function setInvoiceId(?string $invoiceId): void
+    public function setInvoiceId(?int $invoiceId): void
     {
         $this->invoiceId = $invoiceId;
     }
@@ -328,7 +328,7 @@ class User extends BaseEntity
         return $this->reservations;
     }
 
-    public function writePaymentInfo(\App\Model\PaymentInfo $paymentInfo)
+    public function writePaymentInfo(PaymentInfo $paymentInfo)
     {
         $this->invoiceId = $paymentInfo->getInvoiceId();
         $this->invoiceLink = $paymentInfo->getInvoiceLink();
@@ -339,6 +339,10 @@ class User extends BaseEntity
      */
     public function getPaymentInfo()
     {
+        if ($this->invoiceId === null || $this->invoiceLink === null) {
+            throw new \Exception('no payment info available');
+        }
+
         $paymentInfo = new PaymentInfo();
 
         $paymentInfo->setInvoiceId($this->invoiceId);

@@ -34,7 +34,7 @@ class PaymentService implements PaymentServiceInterface
     private $payrexxSecret;
 
     /**
-     * @var string
+     * @var int
      */
     private $payrexxPsp;
 
@@ -47,7 +47,7 @@ class PaymentService implements PaymentServiceInterface
     {
         $this->payrexxInstanceName = $parameterBag->get('PAYREXX_INSTANCE');
         $this->payrexxSecret = $parameterBag->get('PAYREXX_SECRET');
-        $this->payrexxPsp = $parameterBag->get('PAYREXX_PSP');
+        $this->payrexxPsp = (int)$parameterBag->get('PAYREXX_PSP');
 
         $this->translator = $translator;
     }
@@ -144,6 +144,8 @@ class PaymentService implements PaymentServiceInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Exception
      */
     public function closePayment(PaymentInfo $paymentInfo)
     {
@@ -155,6 +157,8 @@ class PaymentService implements PaymentServiceInterface
         /** @var \Payrexx\Models\Response\Invoice $response */
         $response = $payrexx->delete($invoice)[0];
 
-        return $response->getStatus() === 'success';
+        if ($response->getStatus() !== 'success') {
+            throw new \Exception('unable to close payment ' . $paymentInfo->getInvoiceId() . ' ' . $paymentInfo->getInvoiceLink());
+        }
     }
 }
