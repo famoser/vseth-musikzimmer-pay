@@ -107,12 +107,13 @@ class PaymentRemainderController extends BaseController
 
         // close or remove active invoice
         if ($testUser->getInvoiceId() !== null) {
-            if ($testUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
-                $testUser->clearPaymentInfo();
-                $this->fastSave($testUser);
-            } else {
+            if ($testUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
                 $userPaymentService->closeInvoice($testUser);
             }
+
+            $testUser->clearPaymentInfo();
+            $testUser->setPaymentRemainderStatus(PaymentRemainderStatusType::NONE);
+            $this->fastSave($testUser);
         }
 
         // send mail
