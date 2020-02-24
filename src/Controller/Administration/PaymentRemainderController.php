@@ -44,7 +44,7 @@ class PaymentRemainderController extends BaseController
         $paymentRemainder->setBody($translator->trans('default.body', ['support_email' => $this->getParameter('REPLY_EMAIL')], 'entity_payment_remainder'));
 
         $paymentRemainder->setFee(0);
-        $paymentRemainder->setDueAt((new \DateTime())->add(new \DateInterval('P1M')));
+        $paymentRemainder->setDueAt((new \DateTime('today'))->add(new \DateInterval('P1M1D')));
 
         //process form
         $saved = false;
