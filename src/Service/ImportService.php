@@ -162,7 +162,7 @@ class ImportService implements ImportServiceInterface
 
     /**
      * @param Reservation[][] $reservationsByUser
-     * @param \DateTime[] $lastSubscriptionEndByUser
+     * @param string[] $lastSubscriptionEndByUser
      * @param User[] $users
      *
      * @throws \Exception

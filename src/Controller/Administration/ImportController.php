@@ -16,7 +16,6 @@ use App\Entity\Setting;
 use App\Entity\User;
 use App\Form\Setting\InitializeType;
 use App\Service\Interfaces\ImportServiceInterface;
-use App\Service\Interfaces\SettingsServiceInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -37,7 +36,7 @@ class ImportController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Request $request, SettingsServiceInterface $settingService, TranslatorInterface $translator, ImportServiceInterface $importService)
+    public function indexAction(Request $request, TranslatorInterface $translator, ImportServiceInterface $importService)
     {
         /** @var User[] $users */
         $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['email' => 'ASC']);
