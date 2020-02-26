@@ -135,7 +135,7 @@ class PaymentRemainderController extends BaseController
         $testUser->setCategory(UserCategoryType::STUDENT);
         $testUser->setLastPayedPeriodicFeeEnd(null);
         $testUser->setDiscount(0);
-        $testUser->setAmountOwed(26);
+        $testUser->setAmountOwed(27);
         $testUser->generateAuthenticationCode();
 
         $testReservation = new Reservation();
@@ -146,7 +146,15 @@ class PaymentRemainderController extends BaseController
         $testReservation->setUser($testUser);
         $testReservation->setRoom(RoomType::UNAUTHORIZED);
 
-        $this->fastSave($testUser, $testReservation);
+        $testReservation2 = new Reservation();
+        $testReservation2->setStart(new \DateTime('02.01.2020 03:00'));
+        $testReservation2->setEnd(new \DateTime('02.01.2020 04:00'));
+        $testReservation2->setCreatedAt(new \DateTime('02.01.2020 00:00'));
+        $testReservation2->setModifiedAt(new \DateTime('02.01.2020 00:00'));
+        $testReservation2->setUser($testUser);
+        $testReservation2->setRoom(RoomType::UNAUTHORIZED);
+
+        $this->fastSave($testUser, $testReservation, $testReservation2);
 
         return $testUser;
     }

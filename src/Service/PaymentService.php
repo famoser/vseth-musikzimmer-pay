@@ -154,11 +154,6 @@ class PaymentService implements PaymentServiceInterface
         $invoice = new Invoice();
         $invoice->setId($paymentInfo->getInvoiceId());
 
-        /** @var \Payrexx\Models\Response\Invoice $response */
-        $response = $payrexx->delete($invoice)[0];
-
-        if ($response->getStatus() !== 'success') {
-            throw new \Exception('unable to close payment ' . $paymentInfo->getInvoiceId() . ' ' . $paymentInfo->getInvoiceLink());
-        }
+        $payrexx->delete($invoice);
     }
 }
