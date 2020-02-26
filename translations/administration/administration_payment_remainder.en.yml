@@ -1,15 +1,15 @@
 new:
-  title: "Create payment remainder"
-  description: "Send a payment remainder to all users which have not payed yet."
+  title: "Create payment reminder"
+  description: "Send a payment reminder to all users which have not payed yet."
   error:
     missing_url: 'The (url) is missing from the E-Mail body, hence the payment link can not be sent.'
 
 edit:
-  title: "Edit payment remainder"
-  description: "Change the current payment remainder."
+  title: "Edit payment reminder"
+  description: "Change the current payment reminder."
 
 send:
-  title: 'send a remainder to all which have not received one yet'
+  title: 'send a reminder to all which have not received one yet'
   successful: 'emails sent to all users with open payments.'
 
 send_test:

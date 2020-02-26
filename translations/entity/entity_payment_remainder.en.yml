@@ -1,5 +1,5 @@
 entity:
-  name: 'Payment Remainder'
+  name: 'Payment Reminder'
 
 help:
   name: "Name it Invoice / Rechnung the first time. The next time(s) name it Dunning Letter / Mahnung."

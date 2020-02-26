@@ -9,5 +9,5 @@ close_invoice:
   title: 'close invoice_id'
 
 send_payment_remainder:
-  title: 'send payment remainder'
-  successful: 'sent payment remainder to email'
+  title: 'send payment reminder'
+  successful: 'sent payment reminder to email'
