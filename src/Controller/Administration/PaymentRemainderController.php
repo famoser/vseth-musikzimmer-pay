@@ -182,6 +182,11 @@ class PaymentRemainderController extends BaseController
                 $userPaymentService->closeInvoice($notPayedUser);
             }
 
+            // do not send mail to admins/service
+            if ($notPayedUser->getCategory() === UserCategoryType::ADMIN || $notPayedUser->getCategory() === UserCategoryType::SERVICE) {
+                continue;
+            }
+
             // send mail
             $userPaymentService->sendPaymentRemainder($notPayedUser);
         }
