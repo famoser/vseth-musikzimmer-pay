@@ -1,0 +1,63 @@
+$font-family-sans-serif: 'Source Sans Pro' -apple-system, BlinkMacSystemFont, 'Open Sans', "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif
+$primary: #009FE3
+$theme-colors: ("primary": #009FE3)
+@import '~bootstrap/scss/bootstrap'
+
+// add a drop shadow
+@mixin shadow($shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16))
+  -webkit-box-shadow: $shadow
+  -moz-box-shadow: $shadow
+  box-shadow: $shadow
+
+html, body
+  height: 100%
+
+body
+  background-image: url("../images/light_grey.png")
+  background-repeat: repeat repeat
+
+h2
+  text-transform: uppercase
+  color: $gray-600
+
+h3
+  margin-top: 3em
+  color: $primary
+
+// pixel perfect alignment
+.display-3, .display-4
+  position: relative
+  left: -7px
+
+a.card,
+a.card:hover
+  color: inherit
+  text-decoration: none
+
+a.disabled
+  pointer-events: none
+  cursor: pointer
+
+.card
+  @include shadow()
+  margin-bottom: 15px
+
+textarea
+  min-height: 6em
+
+.col-form-label
+  font-size: 0.8em
+  color: $gray-500
+  text-transform: uppercase
+
+fieldset.form-group
+  border-bottom: solid 1px $gray-300
+
+// add * at the end at required form fields
+label.required:after
+  content: '*'
+  color: $danger
+  font-size: 1.2em
+
+label.checkbox-custom:after
+  content: ''
