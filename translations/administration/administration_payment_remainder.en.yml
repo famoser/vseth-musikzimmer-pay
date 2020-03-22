@@ -1,6 +1,7 @@
 new:
   title: "Create payment reminder"
-  description: "Send a payment reminder to all users which have not payed yet."
+  description: "Prepare the payment reminder which you then can send to all users which have not payed yet."
+  help: "After creating the payment reminder please test the E-Mail and payment process with your own account. If everything is fine, send the reminder to all the people with an amount due."
   error:
     missing_url: 'The (url) is missing from the E-Mail body, hence the payment link can not be sent.'
 
