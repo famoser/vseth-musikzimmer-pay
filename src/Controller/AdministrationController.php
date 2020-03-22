@@ -15,6 +15,7 @@ use App\Controller\Administration\Base\BaseController;
 use App\Entity\PaymentRemainder;
 use App\Entity\User;
 use App\Model\PaymentStatistics;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -28,7 +29,7 @@ class AdministrationController extends BaseController
      *
      * @return Response
      */
-    public function indexAction()
+    public function indexAction(ParameterBagInterface $parameterBag)
     {
         /** @var User[] $users */
         $users = $this->getDoctrine()->getRepository(User::class)->findBy([], ['email' => 'ASC']);
@@ -45,6 +46,8 @@ class AdministrationController extends BaseController
             }
         }
 
-        return $this->render('administration.twig', ['users' => $users, 'payment_remainder' => $activePaymentRemainder, 'payment_statistics' => $paymentStatistics]);
+        $mailerBatchSize = $parameterBag->get('MAILER_BATCH_SIZE');
+
+        return $this->render('administration.twig', ['users' => $users, 'payment_remainder' => $activePaymentRemainder, 'payment_statistics' => $paymentStatistics, 'mailer_batch_size' => $mailerBatchSize]);
     }
 }
