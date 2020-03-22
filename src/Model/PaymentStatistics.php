@@ -50,7 +50,7 @@ class PaymentStatistics
     {
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
             ++$this->payedAmountUserCount;
-            $this->payedAmountTotal += $user->getAmountPayed();
+            $this->payedAmountTotal += $user->getAmountPayed() / 100;
         } else {
             ++$this->owedAmountUserCount;
             $this->owedAmountTotal += $user->getAmountOwed() + $fees - $user->getDiscount();

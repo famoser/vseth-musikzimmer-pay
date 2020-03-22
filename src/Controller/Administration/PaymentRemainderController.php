@@ -20,6 +20,7 @@ use App\Enum\RoomType;
 use App\Enum\UserCategoryType;
 use App\Model\Breadcrumb;
 use App\Service\Interfaces\UserPaymentServiceInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -164,12 +165,14 @@ class PaymentRemainderController extends BaseController
      *
      * @return Response
      */
-    public function sendAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    public function sendAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService, ParameterBagInterface $parameterBag)
     {
         $paymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
         if ($paymentRemainder->isSentToAll()) {
             return $this->redirectToRoute('administration');
         }
+
+        $batchSize = $parameterBag->get('MAILER_BATCH_SIZE');
 
         $notPayedUsers = $this->getDoctrine()->getRepository(User::class)->findByNotPayed();
         foreach ($notPayedUsers as $notPayedUser) {
@@ -189,6 +192,11 @@ class PaymentRemainderController extends BaseController
 
             // send mail
             $userPaymentService->sendPaymentRemainder($notPayedUser);
+
+            // stop if too many mails sent yet
+            if (--$batchSize <= 0) {
+                break;
+            }
         }
 
         $paymentRemainder->setSentToAll(true);

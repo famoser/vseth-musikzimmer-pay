@@ -10,3 +10,4 @@ parameters:
   PAYREXX_PSP: '%env(PAYREXX_PSP)%'
   PUBLIC_DIR: "%kernel.project_dir%/public"
   UPLOAD_DIR: "%kernel.project_dir%/var/upload"
+  MAILER_BATCH_SIZE: '%env(MAILER_BATCH_SIZE)%'

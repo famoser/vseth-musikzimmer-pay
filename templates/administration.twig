@@ -51,7 +51,7 @@
                 </p>
                 {% if not payment_remainder.sentToAll %}
                     <p class="alert alert-warning">
-                        {{ "index.payment_remainder_not_sent"|trans({user_count: users|length}) }}
+                        {{ "index.payment_remainder_not_sent"|trans({user_count: users|length, mailer_batch_size: mailer_batch_size}) }}
                     </p>
                     <a class="btn btn-warning"
                        href="{{ path("administration_payment_remainder_send") }}">{{ "send.title"|trans({}, "administration_payment_remainder") }}</a>

@@ -102,6 +102,8 @@ class User extends BaseEntity
     private $lastPayedPeriodicFeeEnd;
 
     /**
+     * this is in francs.
+     *
      * @var int
      *
      * @ORM\Column(type="integer")
@@ -109,6 +111,8 @@ class User extends BaseEntity
     private $amountOwed;
 
     /**
+     * this is in cents.
+     *
      * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
