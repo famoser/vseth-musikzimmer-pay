@@ -103,6 +103,7 @@ class User extends BaseEntity
 
     /**
      * @var int
+     *          this is in francs
      *
      * @ORM\Column(type="integer")
      */
@@ -110,6 +111,7 @@ class User extends BaseEntity
 
     /**
      * @var int|null
+     *               this is in cents
      *
      * @ORM\Column(type="integer", nullable=true)
      */
