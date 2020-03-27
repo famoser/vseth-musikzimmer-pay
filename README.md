@@ -5,8 +5,9 @@ Introduction
 [![Scrutinizer](https://scrutinizer-ci.com/g/famoser/vseth-musikzimmer-pay/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/famoser/vseth-musikzimmer-pay)
 
 Goals:
- - create a semesterly report quick & informs about VSETH structures.
- - evaluate semesterly reports efficiently & export the information.
+ - create invoices in specific range out of musikzimmer export
+ - customers receive person link, can see what they consumed and pay online
+ - administrators can send remainder emails and correct errors on invoices
  
 Testing:
  - request `/login/code/1234` to login as an organisation
