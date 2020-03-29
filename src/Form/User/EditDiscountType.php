@@ -13,6 +13,7 @@ namespace App\Form\User;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,6 +25,7 @@ class EditDiscountType extends AbstractType
     {
         $builder->add('discount', NumberType::class);
         $builder->add('discountDescription', TextareaType::class, ['required' => false]);
+        $builder->add('markedAsPayed', CheckboxType::class, ['required' => false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

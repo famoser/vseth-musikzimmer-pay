@@ -95,45 +95,56 @@
                 <td>{{ user.phone }}</td>
                 <td>{{ user.category|categoryText }}</td>
                 <td>{{ user.amountOwed }}</td>
-                <td>{{ user.discount }}
+                <td>
+                    {% if user.markedAsPayed %}
+                        {{ "marked_as_payed"|trans({}, "entity_user") }}
+                    {% else %}
+                        {{ user.discount }}
+                    {% endif %}
                     <a href="{{ path("administration_user_edit_discount", {"user" : user.id}) }}">
                         <i class="fal fa-pencil"></i>
                     </a>
                 </td>
                 {% if payment_remainder is not null %}
                     <td>
-                        {% if (user.paymentRemainderStatus != 0) %}
-                            {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
-                        {% endif %}
+                        {% if user.markedAsPayed %}
+                            -
+                        {% else %}
+                            {% if (user.paymentRemainderStatus != 0) %}
+                                {{ user.paymentRemainderStatus|paymentRemainderStatusText }}
+                            {% endif %}
 
-                        {% if user.paymentRemainderStatus == 3 %}
-                            <br/>
-                            <a href="{{ user.invoiceLink }}"
-                               target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a>
-                            |
-                            <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
-                        {% endif %}
+                            {% if user.paymentRemainderStatus == 3 %}
+                                <br/>
+                                <a href="{{ user.invoiceLink }}"
+                                   target="_blank">{{ "index.view_invoice"|trans({invoice_id: user.invoiceId}) }}</a>
+                                |
+                                <a href="{{ path("administration_user_close_invoice", {user: user.id}) }}">{{ "close_invoice.title"|trans({invoice_id: user.invoiceId }, "administration_user") }}</a>
+                            {% endif %}
 
-                        {% if user.paymentRemainderStatus == 4 %}
-                            <br/>
-                            <a href="https://{{ payrexx_instance }}.payrexx.com/cadmin/index.php?cmd=checkout&act=payments&id={{ user.transactionId }}"
-                               target="_blank">{{ "index.view_transaction"|trans({transaction_id: user.transactionId }) }}</a>
+                            {% if user.paymentRemainderStatus == 4 %}
+                                <br/>
+                                <a href="https://{{ payrexx_instance }}.payrexx.com/cadmin/index.php?cmd=checkout&act=payments&id={{ user.transactionId }}"
+                                   target="_blank">{{ "index.view_transaction"|trans({transaction_id: user.transactionId }) }}</a>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>
                         <div class="btn-group">
-                            {% if user.paymentRemainderStatus != 4 %}
-                                <a class="btn btn-outline-secondary"
-                                   href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
-                                    <i class="fal fa-envelope"></i>
-                                </a>
-                            {% endif %}
+                            {% if not user.markedAsPayed %}
+                                {% if user.paymentRemainderStatus != 4 %}
+                                    <a class="btn btn-outline-secondary"
+                                       href="{{ path('administration_user_send_payment_remainder', {user: user.id}) }}">
+                                        <i class="fal fa-envelope"></i>
+                                    </a>
+                                {% endif %}
 
-                            {% if user.paymentRemainderStatus != 0 %}
-                                <a class="btn btn-outline-secondary"
-                                   href="{{ path("payment_index", {"user" : user.id}) }}">
-                                    <i class="fal fa-user"></i>
-                                </a>
+                                {% if user.paymentRemainderStatus != 0 %}
+                                    <a class="btn btn-outline-secondary"
+                                       href="{{ path("payment_index", {"user" : user.id}) }}">
+                                        <i class="fal fa-user"></i>
+                                    </a>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </td>

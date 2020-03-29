@@ -37,7 +37,7 @@ class PaymentController extends BaseController
     {
         $this->ensureAccessGranted($user);
 
-        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL || $user->getMarkedAsPayed()) {
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         } elseif ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
             return $this->redirectToRoute('payment_confirm', ['user' => $user->getId()]);
@@ -66,6 +66,10 @@ class PaymentController extends BaseController
     {
         $this->ensureAccessGranted($user);
 
+        if ($user->getMarkedAsPayed()) {
+            return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
+        }
+
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
             /** @var TransactionInfo $transactionInfo */
             $successful = $paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
@@ -83,7 +87,7 @@ class PaymentController extends BaseController
             $this->fastSave($user);
         }
 
-        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL || $user->getMarkedAsPayed()) {
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         }
 
@@ -111,7 +115,7 @@ class PaymentController extends BaseController
             return $this->redirectToRoute('payment_confirm', ['user' => $user->getId()]);
         }
 
-        if ($user->getPaymentRemainderStatus() !== PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+        if ($user->getPaymentRemainderStatus() !== PaymentRemainderStatusType::PAYMENT_SUCCESSFUL && !$user->getMarkedAsPayed()) {
             return $this->redirectToRoute('payment_index', ['user' => $user->getId()]);
         }
 

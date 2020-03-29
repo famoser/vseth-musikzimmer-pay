@@ -148,6 +148,13 @@ class User extends BaseEntity
     private $paymentRemainderStatus = PaymentRemainderStatusType::NONE;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : false})
+     */
+    private $markedAsPayed;
+
+    /**
      * @var \DateTime|null
      *
      * @ORM\Column(type="datetime",nullable=true)
@@ -414,5 +421,15 @@ class User extends BaseEntity
     public function setTransactionId(?string $transactionId): void
     {
         $this->transactionId = $transactionId;
+    }
+
+    public function getMarkedAsPayed(): bool
+    {
+        return $this->markedAsPayed;
+    }
+
+    public function setMarkedAsPayed(bool $markedAsPayed): void
+    {
+        $this->markedAsPayed = $markedAsPayed;
     }
 }
