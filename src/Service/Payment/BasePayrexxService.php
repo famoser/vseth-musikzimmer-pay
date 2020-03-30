@@ -17,7 +17,7 @@ use Payrexx\PayrexxException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-abstract class BasePayrexxProviderService implements PaymentProviderServiceInterface
+abstract class BasePayrexxService implements PaymentProviderServiceInterface
 {
     /**
      * @var string

@@ -19,8 +19,8 @@ use App\Model\TransactionInfo;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\EmailServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
-use App\Service\Payment\GatewayPayrexxService;
 use App\Service\Payment\Interfaces\PaymentProviderServiceInterface;
+use App\Service\Payment\PayrexxService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -56,7 +56,7 @@ class PaymentService implements PaymentServiceInterface
      *
      * @param EmailServiceInterface $emailService
      */
-    public function __construct(GatewayPayrexxService $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
+    public function __construct(PayrexxService $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
     {
         $this->paymentProviderService = $paymentService;
         $this->doctrine = $doctrine;

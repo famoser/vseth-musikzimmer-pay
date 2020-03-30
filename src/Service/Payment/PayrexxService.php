@@ -16,7 +16,10 @@ use App\Model\PaymentInfo;
 use App\Model\TransactionInfo;
 use Payrexx\Models\Request\Invoice;
 
-class InvoicePayrexxService extends BasePayrexxProviderService
+/**
+ * Class PayrexxService.
+ */
+class PayrexxService extends BasePayrexxService
 {
     /**
      * {@inheritdoc}
