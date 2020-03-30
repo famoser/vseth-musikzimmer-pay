@@ -19,7 +19,7 @@ use App\Enum\PaymentRemainderStatusType;
 use App\Enum\RoomType;
 use App\Enum\UserCategoryType;
 use App\Model\Breadcrumb;
-use App\Service\Interfaces\UserPaymentServiceInterface;
+use App\Service\Interfaces\PaymentServiceInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -98,7 +98,7 @@ class PaymentRemainderController extends BaseController
      *
      * @return Response
      */
-    public function sendTestAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    public function sendTestAction(TranslatorInterface $translator, PaymentServiceInterface $userPaymentService)
     {
         $replyEmail = $this->getParameter('REPLY_EMAIL');
         $testUser = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => $replyEmail]);
@@ -165,7 +165,7 @@ class PaymentRemainderController extends BaseController
      *
      * @return Response
      */
-    public function sendAction(TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService, ParameterBagInterface $parameterBag)
+    public function sendAction(TranslatorInterface $translator, PaymentServiceInterface $userPaymentService, ParameterBagInterface $parameterBag)
     {
         $paymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
         if ($paymentRemainder->isSentToAll()) {

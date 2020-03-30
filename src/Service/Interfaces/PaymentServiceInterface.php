@@ -11,28 +11,16 @@
 
 namespace App\Service\Interfaces;
 
+use App\Entity\User;
 use App\Model\Bill;
-use App\Model\PaymentInfo;
-use App\Model\TransactionInfo;
 
 interface PaymentServiceInterface
 {
-    /**
-     * @throws \Payrexx\PayrexxException
-     *
-     * @return PaymentInfo
-     */
-    public function startPayment(Bill $bill, string $successUrl);
+    public function sendPaymentRemainder(User $user);
 
-    /**
-     * @return bool
-     */
-    public function paymentSuccessful(PaymentInfo $paymentInfo, ?TransactionInfo &$transactionInfo);
+    public function startPayment(User $user, Bill $bill, string $url);
 
-    /**
-     * @throws \Payrexx\PayrexxException
-     *
-     * @return void
-     */
-    public function closePayment(PaymentInfo $paymentInfo);
+    public function refreshPaymentStatus(User $user);
+
+    public function closeInvoice(User $user);
 }

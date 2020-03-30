@@ -11,149 +11,125 @@
 
 namespace App\Service;
 
+use App\Entity\PaymentRemainder;
+use App\Entity\User;
+use App\Enum\PaymentRemainderStatusType;
 use App\Model\Bill;
-use App\Model\PaymentInfo;
 use App\Model\TransactionInfo;
+use App\Service\Interfaces\BillServiceInterface;
+use App\Service\Interfaces\EmailServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
-use Payrexx\Models\Response\Invoice;
-use Payrexx\Payrexx;
-use Payrexx\PayrexxException;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Payment\Interfaces\PaymentProviderServiceInterface;
+use App\Service\Payment\PayrexxService;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Routing\RouterInterface;
 
 class PaymentService implements PaymentServiceInterface
 {
     /**
-     * @var string
+     * @var PaymentProviderServiceInterface
      */
-    private $payrexxInstanceName;
+    private $paymentProviderService;
 
     /**
-     * @var string
+     * @var BillServiceInterface
      */
-    private $payrexxSecret;
+    private $billService;
 
     /**
-     * @var int
+     * @var ManagerRegistry
      */
-    private $payrexxPsp;
+    private $doctrine;
 
     /**
-     * @var TranslatorInterface
+     * @var EmailServiceInterface
      */
-    private $translator;
-
-    public function __construct(ParameterBagInterface $parameterBag, TranslatorInterface $translator)
-    {
-        $this->payrexxInstanceName = $parameterBag->get('PAYREXX_INSTANCE');
-        $this->payrexxSecret = $parameterBag->get('PAYREXX_SECRET');
-        $this->payrexxPsp = (int)$parameterBag->get('PAYREXX_PSP');
-
-        $this->translator = $translator;
-    }
+    private $emailService;
 
     /**
-     * @throws PayrexxException
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * UserPaymentService constructor.
      *
-     * @return Payrexx
+     * @param EmailServiceInterface $emailService
      */
-    private function getPayrexx()
+    public function __construct(PayrexxService $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
     {
-        return new Payrexx($this->payrexxInstanceName, $this->payrexxSecret);
+        $this->paymentProviderService = $paymentService;
+        $this->doctrine = $doctrine;
+        $this->emailService = $emailService;
+        $this->router = $router;
+        $this->billService = $billService;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function startPayment(Bill $bill, string $successUrl)
+    public function sendPaymentRemainder(User $user)
     {
-        $invoice = new Invoice();
-        $invoice->setReferenceId($bill->getId()); // info for payment link (reference id)
+        $paymentRemainder = $this->doctrine->getRepository(PaymentRemainder::class)->findActive();
 
-        $title = $this->translator->trans('index.title', [], 'payment');
-        $description = $this->translator->trans('index.description', [], 'payment');
-        $invoice->setTitle($title);
-        $invoice->setDescription($description);
+        $body = $paymentRemainder->getBody();
+        $url = $this->router->generate('login_code', ['code' => $user->getAuthenticationCode()], RouterInterface::ABSOLUTE_URL);
+        $body = str_replace('(url)', $url, $body);
+        $name = $user->getGivenName() . ' ' . $user->getFamilyName();
+        $body = str_replace('(name)', $name, $body);
 
-        $billingPeriod = $this->translator->trans('index.billing_period', [], 'payment');
-        $purpose = $title . ' ' . $billingPeriod . ' ' . $bill->getPeriodStart()->format('d.m.Y') . ' - ' . $bill->getPeriodEnd()->format('d.m.Y');
-        $invoice->setPurpose($purpose);
+        $this->emailService->sendEmail($user->getEmail(), $paymentRemainder->getSubject(), $body);
 
-        $invoice->setPsp($this->payrexxPsp); // see http://developers.payrexx.com/docs/miscellaneous
-        $invoice->setSuccessRedirectUrl($successUrl);
-
-        // don't forget to multiply by 100
-        $invoice->setAmount($bill->getTotal() * 100);
-        $invoice->setVatRate(null);
-        $invoice->setCurrency('CHF');
-
-        // add contact information fields which should be filled by customer
-        $recipient = $bill->getRecipient();
-        $invoice->addField($type = 'email', true, $recipient->getEmail());
-        $invoice->addField($type = 'forename', true, $recipient->getGivenName());
-        $invoice->addField($type = 'surname', true, $recipient->getFamilyName());
-        $invoice->addField($type = 'street', true, $recipient->getStreet());
-        $invoice->addField($type = 'postcode', true, $recipient->getPostcode());
-        $invoice->addField($type = 'place', true, $recipient->getPlace());
-        $invoice->addField($type = 'country', true, 'CH');
-
-        /*
-        we most likely do not need this
-        $invoice->addField($type = 'terms', $mandatory = true);
-        $invoice->addField($type = 'privacy_policy', $mandatory = true);
-        */
-
-        $payrexx = $this->getPayrexx();
-
-        /** @var \Payrexx\Models\Response\Invoice $response */
-        $response = $payrexx->create($invoice);
-
-        $paymentInfo = new PaymentInfo();
-        $paymentInfo->setInvoiceLink($response->getLink());
-        $paymentInfo->setInvoiceId($response->getId());
-
-        return $paymentInfo;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function paymentSuccessful(PaymentInfo $paymentInfo, ?TransactionInfo &$transactionInfo)
-    {
-        $payrexx = $this->getPayrexx();
-
-        $invoice = new Invoice();
-        $invoice->setId($paymentInfo->getInvoiceId());
-
-        /** @var Invoice $response */
-        $response = $payrexx->getOne($invoice);
-        if ($response->getStatus() !== 'confirmed') {
-            return false;
+        if ($user->getPaymentRemainder() !== $paymentRemainder) {
+            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SENT);
         }
-
-        $payedInvoice = $response->getInvoices()[0];
-        $payedAmount = $payedInvoice['products'][0]['price'];
-
-        $payedTransaction = $payedInvoice['transactions'][0];
-        $transactionId = $payedTransaction['uuid'];
-
-        $transactionInfo = new TransactionInfo($payedAmount, $transactionId);
-
-        return true;
+        $user->setPaymentRemainder($paymentRemainder);
+        $this->save($user);
     }
 
     /**
-     * {@inheritdoc}
-     *
+     * @throws \Payrexx\PayrexxException
+     */
+    public function startPayment(User $user, Bill $bill, string $url)
+    {
+        $paymentInfo = $this->paymentProviderService->startPayment($bill, $url);
+
+        $user->writePaymentInfo($paymentInfo);
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
+        $this->save($user);
+    }
+
+    /**
      * @throws \Exception
      */
-    public function closePayment(PaymentInfo $paymentInfo)
+    public function refreshPaymentStatus(User $user)
     {
-        $payrexx = $this->getPayrexx();
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
+            /** @var TransactionInfo $transactionInfo */
+            $successful = $this->paymentProviderService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
+            if ($successful) {
+                $user->setAmountPayed($transactionInfo->getAmount());
+                $user->setTransactionId($transactionInfo->getId());
+                $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
+                $this->save($user);
+            }
+        }
+    }
 
-        $invoice = new Invoice();
-        $invoice->setId($paymentInfo->getInvoiceId());
+    /**
+     * @throws \Payrexx\PayrexxException
+     * @throws \Exception
+     */
+    public function closeInvoice(User $user)
+    {
+        $this->paymentProviderService->closePayment($user->getPaymentInfo());
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_ABORTED);
+        $user->clearPaymentInfo();
 
-        $payrexx->delete($invoice);
+        $this->save($user);
+    }
+
+    private function save(User $user)
+    {
+        $manager = $this->doctrine->getManager();
+        $manager->persist($user);
+        $manager->flush();
     }
 }

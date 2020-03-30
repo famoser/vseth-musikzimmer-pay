@@ -14,7 +14,6 @@ namespace App\Controller;
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
-use App\Model\TransactionInfo;
 use App\Security\Voter\Base\BaseVoter;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
@@ -57,12 +56,12 @@ class PaymentController extends BaseController
     /**
      * @Route("/{user}/confirm", name="payment_confirm")
      *
-     * @throws \Payrexx\PayrexxException
      * @throws \Exception
+     * @throws \Payrexx\PayrexxException
      *
      * @return Response
      */
-    public function confirmAction(User $user, BillServiceInterface $billService, PaymentServiceInterface $paymentService)
+    public function confirmAction(User $user, BillServiceInterface $billService, PaymentServiceInterface $userPaymentService)
     {
         $this->ensureAccessGranted($user);
 
@@ -70,34 +69,19 @@ class PaymentController extends BaseController
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         }
 
+        $userPaymentService->refreshPaymentStatus($user);
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
-            /** @var TransactionInfo $transactionInfo */
-            $successful = $paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
-            if (!$successful) {
-                if ($user->getInvoiceLink() === null) {
-                    throw new \Exception('payment started but no invoice saved');
-                }
-
-                return $this->redirect($user->getInvoiceLink());
-            }
-
-            $user->setAmountPayed($transactionInfo->getAmount());
-            $user->setTransactionId($transactionInfo->getId());
-            $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
-            $this->fastSave($user);
+            return $this->redirect($user->getInvoiceLink());
         }
 
-        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL || $user->getMarkedAsPayed()) {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
             return $this->redirectToRoute('payment_successful', ['user' => $user->getId()]);
         }
 
+        // start payment
         $successUrl = $this->generateUrl('payment_successful', ['user' => $user->getId()], RouterInterface::ABSOLUTE_URL);
         $bill = $billService->createBill($user);
-        $paymentInfo = $paymentService->startPayment($bill, $successUrl);
-
-        $user->writePaymentInfo($paymentInfo);
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
-        $this->fastSave($user);
+        $userPaymentService->startPayment($user, $bill, $successUrl);
 
         return $this->redirect($user->getInvoiceLink());
     }
