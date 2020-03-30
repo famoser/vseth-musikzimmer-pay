@@ -16,7 +16,7 @@ use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
 use App\Form\User\EditDiscountType;
 use App\Model\Breadcrumb;
-use App\Service\Interfaces\UserPaymentServiceInterface;
+use App\Service\Interfaces\PaymentServiceInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +34,7 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function editDiscountAction(Request $request, User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    public function editDiscountAction(Request $request, User $user, TranslatorInterface $translator, PaymentServiceInterface $userPaymentService)
     {
         $discountBefore = $user->getDiscount();
 
@@ -82,7 +82,7 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function closeInvoiceAction(User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    public function closeInvoiceAction(User $user, TranslatorInterface $translator, PaymentServiceInterface $userPaymentService)
     {
         $userPaymentService->closeInvoice($user);
 
@@ -97,7 +97,7 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function sendPaymentRemainderAction(User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
+    public function sendPaymentRemainderAction(User $user, TranslatorInterface $translator, PaymentServiceInterface $userPaymentService)
     {
         $userPaymentService->sendPaymentRemainder($user);
 

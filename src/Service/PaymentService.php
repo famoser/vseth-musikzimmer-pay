@@ -18,12 +18,12 @@ use App\Model\Bill;
 use App\Model\TransactionInfo;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\EmailServiceInterface;
-use App\Service\Interfaces\UserPaymentServiceInterface;
+use App\Service\Interfaces\PaymentServiceInterface;
 use App\Service\Payment\Interfaces\PaymentServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\RouterInterface;
 
-class UserPaymentService implements UserPaymentServiceInterface
+class PaymentService implements PaymentServiceInterface
 {
     /**
      * @var PaymentServiceInterface

@@ -14,7 +14,7 @@ namespace App\Service\Interfaces;
 use App\Entity\User;
 use App\Model\Bill;
 
-interface UserPaymentServiceInterface
+interface PaymentServiceInterface
 {
     public function closeInvoice(User $user);
 

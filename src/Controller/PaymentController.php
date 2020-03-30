@@ -16,8 +16,8 @@ use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
 use App\Security\Voter\Base\BaseVoter;
 use App\Service\Interfaces\BillServiceInterface;
+use App\Service\Interfaces\PaymentServiceInterface;
 use App\Service\Interfaces\SettingsServiceInterface;
-use App\Service\Interfaces\UserPaymentServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -61,7 +61,7 @@ class PaymentController extends BaseController
      *
      * @return Response
      */
-    public function confirmAction(User $user, BillServiceInterface $billService, UserPaymentServiceInterface $userPaymentService)
+    public function confirmAction(User $user, BillServiceInterface $billService, PaymentServiceInterface $userPaymentService)
     {
         $this->ensureAccessGranted($user);
 
