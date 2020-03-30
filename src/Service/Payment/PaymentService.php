@@ -9,12 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Service;
+namespace App\Service\Payment;
 
 use App\Model\Bill;
 use App\Model\PaymentInfo;
 use App\Model\TransactionInfo;
-use App\Service\Interfaces\PaymentServiceInterface;
+use App\Service\Payment\Interfaces\PaymentServiceInterface;
 use Payrexx\Models\Response\Invoice;
 use Payrexx\Payrexx;
 use Payrexx\PayrexxException;
@@ -89,13 +89,13 @@ class PaymentService implements PaymentServiceInterface
 
         // add contact information fields which should be filled by customer
         $recipient = $bill->getRecipient();
-        $invoice->addField($type = 'email', true, $recipient->getEmail());
-        $invoice->addField($type = 'forename', true, $recipient->getGivenName());
-        $invoice->addField($type = 'surname', true, $recipient->getFamilyName());
-        $invoice->addField($type = 'street', true, $recipient->getStreet());
-        $invoice->addField($type = 'postcode', true, $recipient->getPostcode());
-        $invoice->addField($type = 'place', true, $recipient->getPlace());
-        $invoice->addField($type = 'country', true, 'CH');
+        $invoice->addField('email', true, $recipient->getEmail());
+        $invoice->addField('forename', true, $recipient->getGivenName());
+        $invoice->addField('surname', true, $recipient->getFamilyName());
+        $invoice->addField('street', true, $recipient->getStreet());
+        $invoice->addField('postcode', true, $recipient->getPostcode());
+        $invoice->addField('place', true, $recipient->getPlace());
+        $invoice->addField('country', true, 'CH');
 
         /*
         we most likely do not need this

@@ -13,6 +13,7 @@ namespace App\Controller\Administration;
 
 use App\Controller\Administration\Base\BaseController;
 use App\Entity\User;
+use App\Enum\PaymentRemainderStatusType;
 use App\Form\User\EditDiscountType;
 use App\Model\Breadcrumb;
 use App\Service\Interfaces\UserPaymentServiceInterface;
@@ -33,15 +34,25 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function editDiscountAction(Request $request, User $user, TranslatorInterface $translator)
+    public function editDiscountAction(Request $request, User $user, TranslatorInterface $translator, UserPaymentServiceInterface $userPaymentService)
     {
+        $discountBefore = $user->getDiscount();
+
         //create persist callable
-        $myOnSuccessCallable = function (FormInterface $form) use ($user, $translator) {
+        $myOnSuccessCallable = function (FormInterface $form) use ($user, $translator, $discountBefore, $userPaymentService) {
             if (($user->getDiscount() !== 0 || $user->getMarkedAsPayed()) && $user->getDiscountDescription() === null) {
                 $errorText = $translator->trans('edit_discount.error.no_discount_description', [], 'administration_user');
                 $this->displayError($errorText);
             } else {
                 $this->fastSave($user);
+
+                // close invoice if discount has changed
+                if ($user->getDiscount() !== $discountBefore || $user->getMarkedAsPayed()) {
+                    $userPaymentService->refreshPaymentStatus($user);
+                    if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
+                        $userPaymentService->closeInvoice($user);
+                    }
+                }
 
                 $successfulText = $translator->trans('form.successful.updated', [], 'framework');
                 $this->displaySuccess($successfulText);

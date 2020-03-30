@@ -14,9 +14,12 @@ namespace App\Service;
 use App\Entity\PaymentRemainder;
 use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
+use App\Model\Bill;
+use App\Model\TransactionInfo;
+use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\EmailServiceInterface;
-use App\Service\Interfaces\PaymentServiceInterface;
 use App\Service\Interfaces\UserPaymentServiceInterface;
+use App\Service\Payment\Interfaces\PaymentServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -26,6 +29,11 @@ class UserPaymentService implements UserPaymentServiceInterface
      * @var PaymentServiceInterface
      */
     private $paymentService;
+
+    /**
+     * @var BillServiceInterface
+     */
+    private $billService;
 
     /**
      * @var ManagerRegistry
@@ -47,12 +55,13 @@ class UserPaymentService implements UserPaymentServiceInterface
      *
      * @param EmailServiceInterface $emailService
      */
-    public function __construct(PaymentServiceInterface $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, \Symfony\Component\Routing\RouterInterface $router)
+    public function __construct(PaymentServiceInterface $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
     {
         $this->paymentService = $paymentService;
         $this->doctrine = $doctrine;
         $this->emailService = $emailService;
         $this->router = $router;
+        $this->billService = $billService;
     }
 
     /**
@@ -92,5 +101,34 @@ class UserPaymentService implements UserPaymentServiceInterface
         $manager = $this->doctrine->getManager();
         $manager->persist($user);
         $manager->flush();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function refreshPaymentStatus(User $user)
+    {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
+            /** @var TransactionInfo $transactionInfo */
+            $successful = $this->paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
+            if ($successful) {
+                $user->setAmountPayed($transactionInfo->getAmount());
+                $user->setTransactionId($transactionInfo->getId());
+                $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
+                $this->save($user);
+            }
+        }
+    }
+
+    /**
+     * @throws \Payrexx\PayrexxException
+     */
+    public function startPayment(User $user, Bill $bill, string $url)
+    {
+        $paymentInfo = $this->paymentService->startPayment($bill, $url);
+
+        $user->writePaymentInfo($paymentInfo);
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
+        $this->save($user);
     }
 }

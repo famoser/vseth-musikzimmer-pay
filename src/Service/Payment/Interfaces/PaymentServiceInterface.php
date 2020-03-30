@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace App\Service\Interfaces;
+namespace App\Service\Payment\Interfaces;
 
 use App\Model\Bill;
 use App\Model\PaymentInfo;
