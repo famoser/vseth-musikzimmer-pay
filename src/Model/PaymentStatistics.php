@@ -48,7 +48,7 @@ class PaymentStatistics
 
     public function registerUser(User $user, int $fees)
     {
-        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL || $user->getMarkedAsPayed()) {
             ++$this->payedAmountUserCount;
             $this->payedAmountTotal += $user->getAmountPayed() / 100;
         } else {

@@ -152,7 +152,7 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="boolean", options={"default" : false})
      */
-    private $markedAsPayed;
+    private $markedAsPayed = false;
 
     /**
      * @var \DateTime|null

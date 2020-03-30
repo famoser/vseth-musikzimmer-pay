@@ -24,8 +24,9 @@ class UserRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('u');
         $qb->where('u.paymentRemainderStatus != :status')
-            ->andWhere('NOT u.markedAsPayed')
-            ->setParameter('status', PaymentRemainderStatusType::PAYMENT_SUCCESSFUL);
+            ->andWhere('u.markedAsPayed = :markedAsPayed')
+            ->setParameter('status', PaymentRemainderStatusType::PAYMENT_SUCCESSFUL)
+            ->setParameter('markedAsPayed', false);
 
         return $qb->getQuery()->getResult();
     }

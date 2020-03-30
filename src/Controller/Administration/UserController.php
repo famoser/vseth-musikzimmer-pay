@@ -37,15 +37,11 @@ class UserController extends BaseController
     {
         //create persist callable
         $myOnSuccessCallable = function (FormInterface $form) use ($user, $translator) {
-            $manager = $this->getDoctrine()->getManager();
-
-            dump($user->getMarkedAsPayed());
             if (($user->getDiscount() !== 0 || $user->getMarkedAsPayed()) && $user->getDiscountDescription() === null) {
                 $errorText = $translator->trans('edit_discount.error.no_discount_description', [], 'administration_user');
                 $this->displayError($errorText);
             } else {
-                $manager->persist($user);
-                $manager->flush();
+                $this->fastSave($user);
 
                 $successfulText = $translator->trans('form.successful.updated', [], 'framework');
                 $this->displaySuccess($successfulText);
