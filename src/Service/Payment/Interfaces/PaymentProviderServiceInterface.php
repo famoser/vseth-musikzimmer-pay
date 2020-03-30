@@ -15,7 +15,7 @@ use App\Model\Bill;
 use App\Model\PaymentInfo;
 use App\Model\TransactionInfo;
 
-interface PaymentServiceInterface
+interface PaymentProviderServiceInterface
 {
     /**
      * @throws \Payrexx\PayrexxException

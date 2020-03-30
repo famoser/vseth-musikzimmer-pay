@@ -14,50 +14,49 @@ namespace App\Service\Payment;
 use App\Model\Bill;
 use App\Model\PaymentInfo;
 use App\Model\TransactionInfo;
+use Payrexx\Models\Request\Gateway;
 use Payrexx\Models\Request\Invoice;
 
-class InvoicePayrexxService extends BasePayrexxProviderService
+class GatewayPayrexxService extends BasePayrexxProviderService
 {
     /**
      * {@inheritdoc}
      */
     public function startPayment(Bill $bill, string $successUrl)
     {
-        $invoice = new Invoice();
+        $gateway = new Gateway();
 
-        $invoice->setReferenceId($bill->getId()); // info for payment link (reference id)
+        $gateway->setReferenceId($bill->getId()); // info for payment link (reference id)
 
         $title = $this->getTranslator()->trans('index.title', [], 'payment');
-        $description = $this->getTranslator()->trans('index.description', [], 'payment');
-        $invoice->setTitle($title);
-        $invoice->setDescription($description);
-
         $billingPeriod = $this->getTranslator()->trans('index.billing_period', [], 'payment');
         $purpose = $title . ' ' . $billingPeriod . ' ' . $bill->getPeriodStart()->format('d.m.Y') . ' - ' . $bill->getPeriodEnd()->format('d.m.Y');
-        $invoice->setPurpose($purpose);
+        $gateway->setPurpose([$purpose]);
 
-        $invoice->setPsp($this->getPayrexxPsp()); // see http://developers.payrexx.com/docs/miscellaneous
-        $invoice->setSuccessRedirectUrl($successUrl);
+        $gateway->setPsp([$this->getPayrexxPsp()]); // see http://developers.payrexx.com/docs/miscellaneous
+        $gateway->setSuccessRedirectUrl($successUrl);
+        $gateway->setCancelRedirectUrl($successUrl);
+        $gateway->setFailedRedirectUrl($successUrl);
 
         // don't forget to multiply by 100
-        $invoice->setAmount($bill->getTotal() * 100);
-        $invoice->setVatRate(null);
-        $invoice->setCurrency(Invoice::CURRENCY_CHF);
+        $gateway->setAmount($bill->getTotal() * 100);
+        $gateway->setVatRate(null);
+        $gateway->setCurrency(Invoice::CURRENCY_CHF);
 
         // add contact information fields which should be filled by customer
         $recipient = $bill->getRecipient();
-        $invoice->addField('email', true, $recipient->getEmail());
-        $invoice->addField('forename', true, $recipient->getGivenName());
-        $invoice->addField('surname', true, $recipient->getFamilyName());
-        $invoice->addField('street', true, $recipient->getStreet());
-        $invoice->addField('postcode', true, $recipient->getPostcode());
-        $invoice->addField('place', true, $recipient->getPlace());
-        $invoice->addField('country', true, 'CH');
+        $gateway->addField('email', true, $recipient->getEmail());
+        $gateway->addField('forename', true, $recipient->getGivenName());
+        $gateway->addField('surname', true, $recipient->getFamilyName());
+        $gateway->addField('street', true, $recipient->getStreet());
+        $gateway->addField('postcode', true, $recipient->getPostcode());
+        $gateway->addField('place', true, $recipient->getPlace());
+        $gateway->addField('country', true, 'CH');
 
         $payrexx = $this->getPayrexx();
 
-        /** @var \Payrexx\Models\Response\Invoice $response */
-        $response = $payrexx->create($invoice);
+        /** @var \Payrexx\Models\Response\Gateway $response */
+        $response = $payrexx->create($gateway);
 
         $paymentInfo = new PaymentInfo();
         $paymentInfo->setInvoiceLink($response->getLink());
@@ -73,11 +72,11 @@ class InvoicePayrexxService extends BasePayrexxProviderService
     {
         $payrexx = $this->getPayrexx();
 
-        $invoice = new Invoice();
-        $invoice->setId($paymentInfo->getInvoiceId());
+        $gateway = new Gateway();
+        $gateway->setId($paymentInfo->getInvoiceId());
 
-        /** @var \Payrexx\Models\Response\Invoice $response */
-        $response = $payrexx->getOne($invoice);
+        /** @var \Payrexx\Models\Response\Gateway $response */
+        $response = $payrexx->getOne($gateway);
         if ($response->getStatus() !== 'confirmed') {
             return false;
         }
@@ -102,9 +101,9 @@ class InvoicePayrexxService extends BasePayrexxProviderService
     {
         $payrexx = $this->getPayrexx();
 
-        $invoice = new Invoice();
-        $invoice->setId($paymentInfo->getInvoiceId());
+        $gateway = new Gateway();
+        $gateway->setId($paymentInfo->getInvoiceId());
 
-        $payrexx->delete($invoice);
+        $payrexx->delete($gateway);
     }
 }

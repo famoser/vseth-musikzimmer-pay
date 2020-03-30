@@ -19,16 +19,17 @@ use App\Model\TransactionInfo;
 use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\EmailServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
-use App\Service\Payment\Interfaces\PaymentServiceInterface;
+use App\Service\Payment\GatewayPayrexxService;
+use App\Service\Payment\Interfaces\PaymentProviderServiceInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Routing\RouterInterface;
 
 class PaymentService implements PaymentServiceInterface
 {
     /**
-     * @var PaymentServiceInterface
+     * @var PaymentProviderServiceInterface
      */
-    private $paymentService;
+    private $paymentProviderService;
 
     /**
      * @var BillServiceInterface
@@ -55,26 +56,13 @@ class PaymentService implements PaymentServiceInterface
      *
      * @param EmailServiceInterface $emailService
      */
-    public function __construct(PaymentServiceInterface $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
+    public function __construct(GatewayPayrexxService $paymentService, ManagerRegistry $doctrine, Interfaces\EmailServiceInterface $emailService, RouterInterface $router, BillServiceInterface $billService)
     {
-        $this->paymentService = $paymentService;
+        $this->paymentProviderService = $paymentService;
         $this->doctrine = $doctrine;
         $this->emailService = $emailService;
         $this->router = $router;
         $this->billService = $billService;
-    }
-
-    /**
-     * @throws \Payrexx\PayrexxException
-     * @throws \Exception
-     */
-    public function closeInvoice(User $user)
-    {
-        $this->paymentService->closePayment($user->getPaymentInfo());
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_ABORTED);
-        $user->clearPaymentInfo();
-
-        $this->save($user);
     }
 
     public function sendPaymentRemainder(User $user)
@@ -96,11 +84,16 @@ class PaymentService implements PaymentServiceInterface
         $this->save($user);
     }
 
-    private function save(User $user)
+    /**
+     * @throws \Payrexx\PayrexxException
+     */
+    public function startPayment(User $user, Bill $bill, string $url)
     {
-        $manager = $this->doctrine->getManager();
-        $manager->persist($user);
-        $manager->flush();
+        $paymentInfo = $this->paymentProviderService->startPayment($bill, $url);
+
+        $user->writePaymentInfo($paymentInfo);
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
+        $this->save($user);
     }
 
     /**
@@ -110,7 +103,7 @@ class PaymentService implements PaymentServiceInterface
     {
         if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
             /** @var TransactionInfo $transactionInfo */
-            $successful = $this->paymentService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
+            $successful = $this->paymentProviderService->paymentSuccessful($user->getPaymentInfo(), $transactionInfo);
             if ($successful) {
                 $user->setAmountPayed($transactionInfo->getAmount());
                 $user->setTransactionId($transactionInfo->getId());
@@ -122,13 +115,21 @@ class PaymentService implements PaymentServiceInterface
 
     /**
      * @throws \Payrexx\PayrexxException
+     * @throws \Exception
      */
-    public function startPayment(User $user, Bill $bill, string $url)
+    public function closeInvoice(User $user)
     {
-        $paymentInfo = $this->paymentService->startPayment($bill, $url);
+        $this->paymentProviderService->closePayment($user->getPaymentInfo());
+        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_ABORTED);
+        $user->clearPaymentInfo();
 
-        $user->writePaymentInfo($paymentInfo);
-        $user->setPaymentRemainderStatus(PaymentRemainderStatusType::PAYMENT_STARTED);
         $this->save($user);
+    }
+
+    private function save(User $user)
+    {
+        $manager = $this->doctrine->getManager();
+        $manager->persist($user);
+        $manager->flush();
     }
 }

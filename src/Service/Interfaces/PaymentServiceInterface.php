@@ -16,11 +16,11 @@ use App\Model\Bill;
 
 interface PaymentServiceInterface
 {
-    public function closeInvoice(User $user);
-
     public function sendPaymentRemainder(User $user);
+
+    public function startPayment(User $user, Bill $bill, string $url);
 
     public function refreshPaymentStatus(User $user);
 
-    public function startPayment(User $user, Bill $bill, string $url);
+    public function closeInvoice(User $user);
 }

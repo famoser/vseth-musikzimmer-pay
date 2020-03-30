@@ -11,13 +11,13 @@
 
 namespace App\Service\Payment;
 
-use App\Service\Payment\Interfaces\PaymentServiceInterface;
+use App\Service\Payment\Interfaces\PaymentProviderServiceInterface;
 use Payrexx\Payrexx;
 use Payrexx\PayrexxException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class BasePayrexxService implements PaymentServiceInterface
+abstract class BasePayrexxProviderService implements PaymentProviderServiceInterface
 {
     /**
      * @var string
