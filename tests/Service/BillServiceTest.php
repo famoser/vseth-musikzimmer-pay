@@ -23,7 +23,7 @@ class BillServiceTest extends WebTestCase
         $reservation->setEnd(new \DateTime("31.12.2018 19:00"));
         $reservation->setRoom(RoomType::MM_A_98);
 
-        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal);
+        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
 
         $this->assertEquals(2, $reservationTotal, "price for normal room & student should be CHF 1 per hour");
         $this->assertCount(1, $reservationModels);
@@ -50,7 +50,7 @@ class BillServiceTest extends WebTestCase
         $reservation3->setEnd(new \DateTime("31.12.2018 19:00"));
         $reservation3->setRoom(RoomType::HPI_D_4_1);
 
-        $reservationModels = $billService->getReservations([$reservation1, $reservation2, $reservation3], UserCategoryType::STUDENT, $reservationTotal);
+        $reservationModels = $billService->getReservations([$reservation1, $reservation2, $reservation3], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
 
         $this->assertEquals(3 + 14 + 21, $reservationTotal, "prices for normal rooms & student should be CHF 1 per hour");
         $this->assertCount(3, $reservationModels);
@@ -68,7 +68,7 @@ class BillServiceTest extends WebTestCase
         $reservation->setRoom(RoomType::HPI_D_5_2);
 
         /** @var \App\Model\Bill\Reservation[] $reservationModels */
-        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal);
+        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
 
         $this->assertCount(3, $reservationModels, "need to split reservations during different opening times");
 
