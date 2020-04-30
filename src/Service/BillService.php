@@ -97,16 +97,48 @@ class BillService implements BillServiceInterface
     }
 
     /**
-     * @param \App\Entity\Reservation[] $reservations
+     * @param \App\Entity\Reservation[] $splittedReservations
      * @param int $reservationTotal
      *
      * @return Reservation[]
      */
-    private function getReservations(array $reservations, int $userCategory, &$reservationTotal)
+    public function getReservations(array $reservations, int $userCategory, &$reservationTotal)
     {
         $reservationTotal = 0;
         $models = [];
+
+        /** @var \App\Entity\Reservation[] $splittedReservations */
+        $splittedReservations = [];
         foreach ($reservations as $reservation) {
+            /** @var \App\Entity\Reservation $reservation */
+            if (!$this->isRoomMoreExpensiveDuringOpeningTime($reservation->getRoom())) {
+                $splittedReservations[] = $reservation;
+                continue;
+            }
+
+            $remainingReservation = $reservation;
+            if ($reservation->getStart() > $reservation->getEnd()) {
+                throw new \Exception('start time must be before end time');
+            }
+
+            while (true) {
+                [$nextCloseOpenTime] = $this->getNextCloseOpenTime($remainingReservation->getStart());
+
+                // no more changes of reservation fee; hence break
+                if ($nextCloseOpenTime > $remainingReservation->getEnd()) {
+                    $splittedReservations[] = $remainingReservation;
+                    break;
+                }
+
+                $currentReservation = clone $remainingReservation;
+                $currentReservation->setEnd($nextCloseOpenTime);
+                $splittedReservations[] = $currentReservation;
+
+                $remainingReservation->setStart($currentReservation->getEnd());
+            }
+        }
+
+        foreach ($splittedReservations as $reservation) {
             $model = new Reservation();
 
             $model->setStartAt($reservation->getStart());
@@ -114,7 +146,9 @@ class BillService implements BillServiceInterface
 
             $room = RoomType::getTranslation($reservation->getRoom(), $this->translatorService);
             $model->setRoom($room);
-            $model->setPricePerHour($this->getPricePerHour($reservation->getRoom(), $userCategory));
+
+            [, $isCurrentlyWithinOpeningTimes] = $this->getNextCloseOpenTime($reservation->getStart());
+            $model->setPricePerHour($this->getPricePerHour($reservation->getRoom(), $userCategory, $isCurrentlyWithinOpeningTimes));
 
             $duration = $model->getStartAt()->diff($model->getEndAt());
             $hours = $this->getTotalHours($duration);
@@ -176,10 +210,10 @@ class BillService implements BillServiceInterface
     /**
      * @return int
      */
-    private function getPricePerHour(int $room, int $userCategory)
+    private function getPricePerHour(int $room, int $userCategory, bool $isWithinOpeningTimes)
     {
         // bandraum
-        if ($room === RoomType::HPI_D_5_2) {
+        if ($this->isRoomMoreExpensiveDuringOpeningTime($room) && $isWithinOpeningTimes) {
             switch ($userCategory) {
                 case UserCategoryType::STUDENT:
                     return 5;
@@ -204,6 +238,11 @@ class BillService implements BillServiceInterface
         }
     }
 
+    private function isRoomMoreExpensiveDuringOpeningTime(int $room)
+    {
+        return $room === RoomType::HPI_D_5_2;
+    }
+
     /**
      * @param int $room
      *
@@ -221,5 +260,28 @@ class BillService implements BillServiceInterface
             default:
                 return 60;
         }
+    }
+
+    private function getNextCloseOpenTime(\DateTime $dateTime)
+    {
+        $weekday = $dateTime->format('N');
+
+        if ($weekday >= 1 && $weekday <= 5) {
+            //is monday - friday
+            $openTime = (clone $dateTime)->setTime(07, 00);
+            $closeTime = (clone $dateTime)->setTime(18, 00);
+
+            if ($dateTime < $openTime) {
+                return [$openTime, 0];
+            } elseif ($dateTime < $closeTime) {
+                return [$closeTime, 1];
+            }
+        }
+
+        $dateTime = clone $dateTime;
+        $dateTime->add(new \DateInterval('P1D'));
+        $dateTime->setTime(0, 0);
+
+        return $this->getNextCloseOpenTime($dateTime);
     }
 }
