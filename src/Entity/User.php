@@ -111,6 +111,15 @@ class User extends BaseEntity
     private $amountOwed;
 
     /**
+     * this is in francs.
+     *
+     * @var int
+     *
+     * @ORM\Column(type="integer", options={"default" : 0})
+     */
+    private $outOfOpeningTimesDiscount = 0;
+
+    /**
      * this is in cents.
      *
      * @var int|null
@@ -431,5 +440,15 @@ class User extends BaseEntity
     public function setMarkedAsPayed(bool $markedAsPayed): void
     {
         $this->markedAsPayed = $markedAsPayed;
+    }
+
+    public function getOutOfOpeningTimesDiscount(): int
+    {
+        return $this->outOfOpeningTimesDiscount;
+    }
+
+    public function setOutOfOpeningTimesDiscount(int $outOfOpeningTimesDiscount): void
+    {
+        $this->outOfOpeningTimesDiscount = $outOfOpeningTimesDiscount;
     }
 }

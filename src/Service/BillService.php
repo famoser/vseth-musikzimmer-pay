@@ -60,9 +60,10 @@ class BillService implements BillServiceInterface
         $bill->setPeriodEnd($setting->getPeriodEnd());
         $bill->setCategory($user->getCategory());
 
-        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal);
+        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal, $reservationsSubtotalAlwaysOpen);
         $bill->setReservations($reservations);
         $bill->setReservationsSubtotal($reservationsSubtotal);
+        $bill->setReservationsSubtotalDiscount($reservationsSubtotalAlwaysOpen - $reservationsSubtotal);
         $bill->setTotal($bill->getTotal() + $reservationsSubtotal);
 
         $bill->setLastPayedSubscriptionEnd($user->getLastPayedPeriodicFeeEnd());
@@ -84,16 +85,15 @@ class BillService implements BillServiceInterface
 
     /**
      * @throws \Exception
-     *
-     * @return int
      */
-    public function getAmountOwed(User $user)
+    public function setAmountOwed(User $user)
     {
-        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal);
+        $reservations = $this->getReservations($user->getReservations()->toArray(), $user->getCategory(), $reservationsSubtotal, $reservationsSubtotalAlwaysOpen);
 
         $this->getSubscriptions($reservations, $user->getLastPayedPeriodicFeeEnd(), $user->getCategory(), $subscriptionsSubtotal);
 
-        return $reservationsSubtotal + $subscriptionsSubtotal;
+        $user->setAmountOwed($reservationsSubtotal + $subscriptionsSubtotal);
+        $user->setOutOfOpeningTimesDiscount($reservationsSubtotalAlwaysOpen - $reservationsSubtotal);
     }
 
     /**
@@ -102,9 +102,10 @@ class BillService implements BillServiceInterface
      *
      * @return Reservation[]
      */
-    public function getReservations(array $reservations, int $userCategory, &$reservationTotal)
+    public function getReservations(array $reservations, int $userCategory, &$reservationTotal, &$reservationTotalAlwaysOpen)
     {
         $reservationTotal = 0;
+        $reservationTotalAlwaysOpen = 0;
         $models = [];
 
         /** @var \App\Entity\Reservation[] $splittedReservations */
@@ -125,7 +126,7 @@ class BillService implements BillServiceInterface
                 [$nextCloseOpenTime] = $this->getNextCloseOpenTime($remainingReservation->getStart());
 
                 // no more changes of reservation fee; hence break
-                if ($nextCloseOpenTime > $remainingReservation->getEnd()) {
+                if ($nextCloseOpenTime >= $remainingReservation->getEnd()) {
                     $splittedReservations[] = $remainingReservation;
                     break;
                 }
@@ -155,6 +156,7 @@ class BillService implements BillServiceInterface
             $model->setTotal($hours * $model->getPricePerHour());
 
             $reservationTotal += $model->getTotal();
+            $reservationTotalAlwaysOpen += $this->getPricePerHour($reservation->getRoom(), $userCategory, true) * $hours;
             $models[] = $model;
         }
 

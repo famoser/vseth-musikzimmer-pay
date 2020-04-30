@@ -71,7 +71,9 @@ class ImportService implements ImportServiceInterface
         $users = [];
         $this->parseUsers($usersPath, $reservationsByUser, $lastSubscriptionEndByUser, $users);
 
-        $this->calculateAmountOwed($users);
+        foreach ($users as $user) {
+            $this->billService->setAmountOwed($user);
+        }
 
         $this->saveAll($users, $reservationsByUser);
 
@@ -86,17 +88,6 @@ class ImportService implements ImportServiceInterface
         }
 
         return new ImportStatistics(\count($users), $totalReservations, $totalAmountOwed);
-    }
-
-    /**
-     * @param User[] $users
-     */
-    private function calculateAmountOwed(array $users)
-    {
-        foreach ($users as $user) {
-            $amountOwed = $this->billService->getAmountOwed($user);
-            $user->setAmountOwed($amountOwed);
-        }
     }
 
     /**

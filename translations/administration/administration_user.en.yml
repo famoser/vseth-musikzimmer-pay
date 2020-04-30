@@ -11,3 +11,7 @@ close_invoice:
 send_payment_remainder:
   title: 'send payment reminder'
   successful: 'sent payment reminder to email'
+
+recalculate:
+  title: 'recalculate amounts'
+  successful: 'amounts recalculated'
