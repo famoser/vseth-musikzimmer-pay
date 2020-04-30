@@ -117,7 +117,7 @@ class User extends BaseEntity
      *
      * @ORM\Column(type="integer", options={"default" : 0})
      */
-    private $outOfOpeningTimesDiscount;
+    private $outOfOpeningTimesDiscount = 0;
 
     /**
      * this is in cents.
