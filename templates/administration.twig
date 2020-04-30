@@ -47,8 +47,6 @@
                         </p>
                     </div>
                 </div>
-                <p>
-                </p>
                 {% if not payment_remainder.sentToAll %}
                     <p class="alert alert-warning">
                         {{ "index.payment_remainder_not_sent"|trans({user_count: users|length, mailer_batch_size: mailer_batch_size}) }}
@@ -63,6 +61,8 @@
                     {{ "index.payed_amount_total"|trans({user_count: payment_statistics.payedAmountUserCount, total: payment_statistics.payedAmountTotal}) }}
                     <br/>
                     {{ "index.discount_total"|trans({user_count: payment_statistics.discountUserCount, total: payment_statistics.discountTotal}) }}
+                    <br/>
+                    <a href="{{ path("administration_user_recalculate") }}">{{ "recalculate.title"|trans({}, "administration_user") }}</a>
                 </p>
             {% endif %}
         </div>
@@ -94,7 +94,12 @@
                 <td>{{ user.familyName }}</td>
                 <td>{{ user.phone }}</td>
                 <td>{{ user.category|categoryText }}</td>
-                <td>{{ user.amountOwed }}</td>
+                <td>
+                    {{ user.amountOwed }}
+                    {% if user.outOfOpeningTimesDiscount != 0 %}
+                        <span class="badge badge-danger">{{ user.outOfOpeningTimesDiscount }}</span>
+                    {% endif %}
+                </td>
                 <td>
                     {% if user.markedAsPayed %}
                         {{ "marked_as_payed"|trans({}, "entity_user") }}

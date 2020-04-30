@@ -25,9 +25,4 @@ interface BillServiceInterface
      * @return int
      */
     public function setAmountOwed(User $user);
-
-    /**
-     * @return int
-     */
-    public function getAmountOwedAlwaysOpen(User $user);
 }

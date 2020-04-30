@@ -113,7 +113,7 @@ class UserController extends BaseController
      *
      * @return Response
      */
-    public function recalculateAction(BillServiceInterface $billService)
+    public function recalculateAction(BillServiceInterface $billService, TranslatorInterface $translator)
     {
         /** @var User[] $users */
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
@@ -121,7 +121,10 @@ class UserController extends BaseController
         foreach ($users as $user) {
             $billService->setAmountOwed($user);
         }
-        $this->fastSave($users);
+        $this->fastSave(...$users);
+
+        $recalculationSuccessful = $translator->trans('recalculate.successful', [], 'administration_user');
+        $this->displaySuccess($recalculationSuccessful);
 
         return $this->redirectToRoute('administration');
     }

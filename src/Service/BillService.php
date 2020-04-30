@@ -85,8 +85,6 @@ class BillService implements BillServiceInterface
 
     /**
      * @throws \Exception
-     *
-     * @return int
      */
     public function setAmountOwed(User $user)
     {
@@ -95,7 +93,7 @@ class BillService implements BillServiceInterface
         $this->getSubscriptions($reservations, $user->getLastPayedPeriodicFeeEnd(), $user->getCategory(), $subscriptionsSubtotal);
 
         $user->setAmountOwed($reservationsSubtotal + $subscriptionsSubtotal);
-        $user->setAmountOwedAlwaysOpen($reservationsSubtotal + $reservationsSubtotalAlwaysOpen);
+        $user->setOutOfOpeningTimesDiscount($reservationsSubtotalAlwaysOpen - $reservationsSubtotal);
     }
 
     /**
@@ -158,7 +156,7 @@ class BillService implements BillServiceInterface
             $model->setTotal($hours * $model->getPricePerHour());
 
             $reservationTotal += $model->getTotal();
-            $reservationTotalAlwaysOpen += $this->getPricePerHour($reservation->getRoom(), $userCategory, true);
+            $reservationTotalAlwaysOpen += $this->getPricePerHour($reservation->getRoom(), $userCategory, true) * $hours;
             $models[] = $model;
         }
 
