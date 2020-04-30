@@ -125,7 +125,7 @@ class BillService implements BillServiceInterface
                 [$nextCloseOpenTime] = $this->getNextCloseOpenTime($remainingReservation->getStart());
 
                 // no more changes of reservation fee; hence break
-                if ($nextCloseOpenTime > $remainingReservation->getEnd()) {
+                if ($nextCloseOpenTime >= $remainingReservation->getEnd()) {
                     $splittedReservations[] = $remainingReservation;
                     break;
                 }
