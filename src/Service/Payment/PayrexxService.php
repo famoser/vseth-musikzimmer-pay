@@ -44,7 +44,7 @@ class PayrexxService extends BasePayrexxService
 
         // don't forget to multiply by 100
         $invoice->setAmount($bill->getTotal() * 100);
-        $invoice->setVatRate(null);
+        $invoice->setVatRate($this->getPayrexxVatRate());
         $invoice->setCurrency(Invoice::CURRENCY_CHF);
 
         // add contact information fields which should be filled by customer
