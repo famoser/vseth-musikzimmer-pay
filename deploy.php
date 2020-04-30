@@ -58,7 +58,7 @@ task('deploy:refresh_symlink', function () {
 
 // use PROD env & no interaction
 set('bin/console', function () {
-    return parse('{{bin/php}} {{release_path}}/bin/console --no-interaction --env=PROD');
+    return parse('{{release_path}}/bin/console --no-interaction --env=PROD');
 });
 
 
