@@ -180,8 +180,11 @@ class PaymentRemainderController extends BaseController
                 continue;
             }
 
-            // close active invoice
-            if ($notPayedUser->getInvoiceId() !== null) {
+            // clean up payment status
+            $userPaymentService->refreshPaymentStatus($notPayedUser);
+            if ($notPayedUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+                continue;
+            } elseif ($notPayedUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
                 $userPaymentService->closeInvoice($notPayedUser);
             }
 
