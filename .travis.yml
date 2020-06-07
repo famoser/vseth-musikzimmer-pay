@@ -70,9 +70,6 @@ before_script:
 
 # execute tests
 script:
-  # frontend lint
-  - ./node_modules/.bin/eslint assets/js
-
     # frontend vulnerability check
   - yarn audit
 
