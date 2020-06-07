@@ -96,9 +96,6 @@
                 <td>{{ user.category|categoryText }}</td>
                 <td>
                     {{ user.amountOwed }}
-                    {% if user.outOfOpeningTimesDiscount != 0 %}
-                        <span class="badge badge-danger">{{ user.outOfOpeningTimesDiscount }}</span>
-                    {% endif %}
                 </td>
                 <td>
                     {% if user.markedAsPayed %}
