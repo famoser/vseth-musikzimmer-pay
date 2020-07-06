@@ -77,7 +77,7 @@ class PaymentService implements PaymentServiceInterface
 
         $this->emailService->sendEmail($user->getEmail(), $paymentRemainder->getSubject(), $body);
 
-        if ($user->getPaymentRemainder() !== $paymentRemainder) {
+        if ($user->getPaymentRemainderStatus() === PaymentRemainderStatusType::NONE) {
             $user->setPaymentRemainderStatus(PaymentRemainderStatusType::SENT);
         }
         $user->setPaymentRemainder($paymentRemainder);
