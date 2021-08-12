@@ -254,13 +254,13 @@ class BillService implements BillServiceInterface
     {
         switch ($userCategory) {
             case UserCategoryType::STUDENT:
-                return 25;
+                return 12.5;
             case UserCategoryType::PHD:
-                return 40;
+                return 20;
             case UserCategoryType::ETH_UNIVERSITY_STAFF:
-                return 50;
+                return 25;
             default:
-                return 60;
+                return 30;
         }
     }
 
