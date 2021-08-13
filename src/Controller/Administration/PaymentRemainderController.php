@@ -175,14 +175,10 @@ class PaymentRemainderController extends BaseController
         $batchSize = $parameterBag->get('MAILER_BATCH_SIZE');
 
         $notPayedUsers = $this->getDoctrine()->getRepository(User::class)->findByNotPayed();
+        $aborted = false;
         foreach ($notPayedUsers as $notPayedUser) {
             if ($notPayedUser->getPaymentRemainder() === $paymentRemainder) {
                 continue;
-            }
-
-            // close active invoice
-            if ($notPayedUser->getInvoiceId() !== null) {
-                $userPaymentService->closeInvoice($notPayedUser);
             }
 
             // do not send mail to admins/service
@@ -190,17 +186,28 @@ class PaymentRemainderController extends BaseController
                 continue;
             }
 
-            // send mail
-            $userPaymentService->sendPaymentRemainder($notPayedUser);
+            // clean up payment status
+            $userPaymentService->refreshPaymentStatus($notPayedUser);
+            if ($notPayedUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_SUCCESSFUL) {
+                continue;
+            } elseif ($notPayedUser->getPaymentRemainderStatus() === PaymentRemainderStatusType::PAYMENT_STARTED) {
+                $userPaymentService->closeInvoice($notPayedUser);
+            }
 
             // stop if too many mails sent yet
             if (--$batchSize <= 0) {
+                $aborted = true;
                 break;
             }
+
+            // send mail
+            $userPaymentService->sendPaymentRemainder($notPayedUser);
         }
 
-        $paymentRemainder->setSentToAll(true);
-        $this->fastSave($paymentRemainder);
+        if (!$aborted) {
+            $paymentRemainder->setSentToAll(true);
+            $this->fastSave($paymentRemainder);
+        }
 
         $success = $translator->trans('send.successful', [], 'administration_payment_remainder');
         $this->displaySuccess($success);
