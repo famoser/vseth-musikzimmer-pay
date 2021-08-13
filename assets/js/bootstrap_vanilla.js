@@ -4,7 +4,6 @@ window.$ = $;
 
 // bootstrap & plugins
 require("bootstrap");
-require("bootstrap-select");
 
 require( 'datatables.net');
 require( 'datatables.net-bs4');
@@ -24,9 +23,6 @@ $(document).ready(function () {
             $buttons.addClass("disabled");
         }
     });
-
-    //initialize multiselect
-    $('select[multiple]').selectpicker();
 
     //force reload on user browser button navigation
     $(window).on('popstate', function () {
