@@ -35,6 +35,11 @@ abstract class BasePayrexxService implements PaymentProviderServiceInterface
     private $payrexxPsp;
 
     /**
+     * @var float|null
+     */
+    private $payrexxVatRate;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -44,8 +49,14 @@ abstract class BasePayrexxService implements PaymentProviderServiceInterface
         $this->payrexxInstanceName = $parameterBag->get('PAYREXX_INSTANCE');
         $this->payrexxSecret = $parameterBag->get('PAYREXX_SECRET');
         $this->payrexxPsp = (int)$parameterBag->get('PAYREXX_PSP');
+        $this->payrexxVatRate = mb_strlen($parameterBag->get('PAYREXX_VAT_RATE')) > 0 ? (float)$parameterBag->get('PAYREXX_VAT_RATE') : null;
 
         $this->translator = $translator;
+    }
+
+    protected function getPayrexxVatRate(): ?float
+    {
+        return $this->payrexxVatRate;
     }
 
     /**
