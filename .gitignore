@@ -1,6 +1,7 @@
 # development
 .idea
 .build
+.phpunit.result.cache
 *.phar
 trace.html
 
