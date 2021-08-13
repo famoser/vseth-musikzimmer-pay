@@ -1,3 +1,5 @@
+const path = require('path');
+
 var Encore = require("@symfony/webpack-encore");
 
 Encore
@@ -37,6 +39,16 @@ Encore
 
     // create hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
+
+    .configureDevServerOptions(options => {
+        delete options.client
+        options.https = {
+            pfx: path.join(process.env.HOME, '.symfony/certs/default.p12'),
+        }
+        options.devMiddleware = {
+            writeToDisk: true
+        }
+    })
 ;
 
 // export the final configuration
