@@ -74,7 +74,7 @@ before_script:
 
 # execute tests
 script:
-    # frontend vulnerability check
+   # frontend vulnerability check
   - yarn audit --groups dependencies
 
   # backend lint
@@ -89,4 +89,4 @@ script:
 
   # backend tests
   - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
-  - /usr/local/bin/phpunit
+  - XDEBUG_MODE=coverage /usr/local/bin/phpunit
