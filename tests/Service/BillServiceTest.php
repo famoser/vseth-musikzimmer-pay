@@ -23,7 +23,7 @@ class BillServiceTest extends WebTestCase
         $reservation->setEnd(new \DateTime("31.12.2018 19:00"));
         $reservation->setRoom(RoomType::MM_A_98);
 
-        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
+        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal);
 
         $this->assertEquals(2, $reservationTotal, "price for normal room & student should be CHF 1 per hour");
         $this->assertCount(1, $reservationModels);
@@ -50,38 +50,9 @@ class BillServiceTest extends WebTestCase
         $reservation3->setEnd(new \DateTime("31.12.2018 19:00"));
         $reservation3->setRoom(RoomType::HPI_D_4_1);
 
-        $reservationModels = $billService->getReservations([$reservation1, $reservation2, $reservation3], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
+        $reservationModels = $billService->getReservations([$reservation1, $reservation2, $reservation3], UserCategoryType::STUDENT, $reservationTotal);
 
         $this->assertEquals(3 + 14 + 21, $reservationTotal, "prices for normal rooms & student should be CHF 1 per hour");
         $this->assertCount(3, $reservationModels);
-    }
-
-    public function testReservationWithDifferentPricesDuringOpeningTime()
-    {
-        self::bootKernel();
-
-        $billService = self::$container->get(BillService::class);
-
-        $reservation = new Reservation();
-        $reservation->setStart(new \DateTime("30.12.2018 23:00"));
-        $reservation->setEnd(new \DateTime("31.12.2018 20:00:00"));
-        $reservation->setRoom(RoomType::HPI_D_5_2);
-
-        /** @var \App\Model\Bill\Reservation[] $reservationModels */
-        $reservationModels = $billService->getReservations([$reservation], UserCategoryType::STUDENT, $reservationTotal, $reservationsSubtotalAlwaysOpen);
-
-        $this->assertCount(3, $reservationModels, "need to split reservations during different opening times");
-
-        $this->assertEquals(8, $reservationModels[0]->getTotal(), "reduced price because outside opening time");
-        $this->assertEquals("30.12.2018 23:00", $reservationModels[0]->getStartAt()->format("d.m.Y H:i"));
-        $this->assertEquals("31.12.2018 07:00", $reservationModels[0]->getEndAt()->format("d.m.Y H:i"));
-
-        $this->assertEquals(11 * 5, $reservationModels[1]->getTotal(), "full price because inside opening time");
-        $this->assertEquals("31.12.2018 07:00", $reservationModels[1]->getStartAt()->format("d.m.Y H:i"));
-        $this->assertEquals("31.12.2018 18:00", $reservationModels[1]->getEndAt()->format("d.m.Y H:i"));
-
-        $this->assertEquals(2, $reservationModels[2]->getTotal(), "reduced price because outside opening time");
-        $this->assertEquals("31.12.2018 18:00", $reservationModels[2]->getStartAt()->format("d.m.Y H:i"));
-        $this->assertEquals("31.12.2018 20:00", $reservationModels[2]->getEndAt()->format("d.m.Y H:i"));
     }
 }

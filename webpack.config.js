@@ -25,9 +25,6 @@ Encore
     // allow legacy applications to use $/jQuery as a global variable
     .autoProvidejQuery()
 
-    // enable vue.js loader
-    .enableVueLoader()
-
     // allow debugging of minified assets
     .enableSourceMaps(!Encore.isProduction())
 

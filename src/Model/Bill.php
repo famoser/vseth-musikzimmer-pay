@@ -54,11 +54,6 @@ class Bill
     private $reservationsSubtotal = 0;
 
     /**
-     * @var int
-     */
-    private $reservationsSubtotalDiscount = 0;
-
-    /**
      * @var \DateTime|null
      */
     private $lastPayedSubscriptionEnd;
@@ -243,15 +238,5 @@ class Bill
     public function setSubscriptionsSubtotal(int $subscriptionsSubtotal): void
     {
         $this->subscriptionsSubtotal = $subscriptionsSubtotal;
-    }
-
-    public function getReservationsSubtotalDiscount(): int
-    {
-        return $this->reservationsSubtotalDiscount;
-    }
-
-    public function setReservationsSubtotalDiscount(int $reservationsSubtotalDiscount): void
-    {
-        $this->reservationsSubtotalDiscount = $reservationsSubtotalDiscount;
     }
 }
