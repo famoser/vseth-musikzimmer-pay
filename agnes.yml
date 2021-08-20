@@ -15,7 +15,7 @@ config:
 
 data:
   shared_folders:
-    - var/persistent
+    - var
 
   files:
     - path: .env.local
