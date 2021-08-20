@@ -31,7 +31,7 @@ scripts:
       - rm -rf node_modules
 
   release:
-    hook: after_release
+    after: release
     script:
       # TODO: check if executed as expected
       # backup source to VSETH deploy repository
