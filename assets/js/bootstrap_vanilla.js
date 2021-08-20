@@ -29,6 +29,11 @@ $(document).ready(function () {
         location.reload(true);
     });
 
+    $('input[type="file"]').change(function(e){
+        const fileName = e.target.files[0].name;
+        $(e.target).siblings('.custom-file-label').text(fileName);
+    });
+
     //enable ajax form submission
     $('form.ajax-form').on("submit", function (event) {
         event.preventDefault();

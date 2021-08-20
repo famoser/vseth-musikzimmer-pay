@@ -10,7 +10,8 @@
         <div class="card-body">
             {% if payment_remainder is null %}
                 <div class="alert alert-info">
-                    <p>{{ "index.no_payment_remainder_yet"|trans }}:
+                    <p class="mb-0">
+                        {{ "index.no_payment_remainder_yet"|trans }}:
                         <a href="{{ path("administration_payment_remainder_new") }}">{{ "new.title"|trans({}, "administration_payment_remainder") }}</a>.
                     </p>
                 </div>
@@ -54,17 +55,15 @@
                     <a class="btn btn-warning"
                        href="{{ path("administration_payment_remainder_send") }}">{{ "send.title"|trans({}, "administration_payment_remainder") }}</a>
                 {% endif %}
-                <hr/>
-                <p>
-                    {{ "index.owed_amount_total"|trans({user_count: payment_statistics.owedAmountUserCount, total: payment_statistics.owedAmountTotal}) }}
-                    <br/>
-                    {{ "index.payed_amount_total"|trans({user_count: payment_statistics.payedAmountUserCount, total: payment_statistics.payedAmountTotal}) }}
-                    <br/>
-                    {{ "index.discount_total"|trans({user_count: payment_statistics.discountUserCount, total: payment_statistics.discountTotal}) }}
-                    <br/>
-                    <a href="{{ path("administration_user_recalculate") }}">{{ "recalculate.title"|trans({}, "administration_user") }}</a>
-                </p>
             {% endif %}
+            <hr/>
+            <p>
+                {{ "index.owed_amount_total"|trans({user_count: payment_statistics.owedAmountUserCount, total: payment_statistics.owedAmountTotal}) }}
+                <br/>
+                {{ "index.payed_amount_total"|trans({user_count: payment_statistics.payedAmountUserCount, total: payment_statistics.payedAmountTotal}) }}
+                <br/>
+                {{ "index.discount_total"|trans({user_count: payment_statistics.discountUserCount, total: payment_statistics.discountTotal}) }}
+            </p>
         </div>
     </div>
 {% endblock %}
