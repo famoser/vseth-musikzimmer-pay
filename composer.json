@@ -42,7 +42,7 @@
   "require-dev": {
     "brainmaestro/composer-git-hooks": "^2.6",
     "deployer/deployer": "^6.1",
-    "famoser/agnes": "^2.0",
+    "famoser/agnes": "^v4.2.1",
     "friendsofphp/php-cs-fixer": "^2.7",
     "fzaninotto/faker": "^1.7",
     "php-coveralls/php-coveralls": "^2.0",

@@ -16,7 +16,6 @@ use App\Entity\User;
 use App\Enum\PaymentRemainderStatusType;
 use App\Form\User\EditDiscountType;
 use App\Model\Breadcrumb;
-use App\Service\Interfaces\BillServiceInterface;
 use App\Service\Interfaces\PaymentServiceInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
@@ -104,27 +103,6 @@ class UserController extends BaseController
 
         $invoiceClosed = $translator->trans('send_payment_remainder.successful', ['email' => $user->getEmail()], 'administration_user');
         $this->displaySuccess($invoiceClosed);
-
-        return $this->redirectToRoute('administration');
-    }
-
-    /**
-     * @Route("/recalculate", name="administration_user_recalculate")
-     *
-     * @return Response
-     */
-    public function recalculateAction(BillServiceInterface $billService, TranslatorInterface $translator)
-    {
-        /** @var User[] $users */
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
-
-        foreach ($users as $user) {
-            $billService->setAmountOwed($user);
-        }
-        $this->fastSave(...$users);
-
-        $recalculationSuccessful = $translator->trans('recalculate.successful', [], 'administration_user');
-        $this->displaySuccess($recalculationSuccessful);
 
         return $this->redirectToRoute('administration');
     }

@@ -40,10 +40,9 @@ class AdministrationController extends BaseController
 
         $activePaymentRemainder = $this->getDoctrine()->getRepository(PaymentRemainder::class)->findActive();
         $paymentStatistics = new PaymentStatistics();
-        if ($activePaymentRemainder !== null) {
-            foreach ($users as $user) {
-                $paymentStatistics->registerUser($user, $activePaymentRemainder->getFee());
-            }
+        foreach ($users as $user) {
+            $fees = $activePaymentRemainder ? $activePaymentRemainder->getFee() : 0;
+            $paymentStatistics->registerUser($user, $fees);
         }
 
         $mailerBatchSize = $parameterBag->get('MAILER_BATCH_SIZE');
