@@ -1,6 +1,9 @@
 agnes:
   version: 4
 
+build:
+  path: .build
+
 github:
   api_token: '%env(GITHUB_API_TOKEN)%'
   repository: famoser/vseth-musikzimmer-pay
@@ -27,6 +30,10 @@ scripts:
       - yarn run encore production
       - rm -rf node_modules
 
+  release:
+    hook: release
+    script:
+      # TODO: check if executed as expected
       # backup source to VSETH deploy repository
       - git clone git@gitlab.ethz.ch:vseth/0300-vs/musikzimmer-pay.git deploy
       - mkdir -p ./deploy/source
@@ -40,7 +47,6 @@ scripts:
     hook: deploy
     script:
       - php bin/console cache:clear -n
-      - test $PREVIOUS_RELEASE_PATH != false && cp -r $PREVIOUS_RELEASE_PATH/var/transient var/transient
       - find var -type d -print0 | xargs -0 chmod 0755
       - find var -type f -print0 | xargs -0 chmod 0644
       - php bin/console doctrine:migrations:migrate -n
