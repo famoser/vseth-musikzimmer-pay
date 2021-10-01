@@ -15,7 +15,7 @@
     "@fortawesome/vue-fontawesome": "^0.1",
     "@vseth/vseth-theme": "^1.5.0-alpha.9",
     "bootstrap": "^4",
-    "datatables.net": "^1.10.20",
+    "datatables.net": "^1.11.3",
     "datatables.net-bs4": "^1.10.20",
     "open-sans-fontface": "^1.4",
     "popper.js": "^1.12"
